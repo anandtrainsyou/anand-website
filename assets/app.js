@@ -1,6 +1,6 @@
 // Shared site logic. Plans live in /data/plans.json; every page here reads from that one file.
 
-const SITE_NAME = 'Coach Name';
+const SITE_NAME = 'ATcoaching';
 
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

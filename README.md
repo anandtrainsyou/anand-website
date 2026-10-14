@@ -45,7 +45,7 @@ If you'd rather hand out your own designed PDF, drop it in `downloads/` and add 
 
 ## Editing text
 
-The homepage copy is in `index.html`. The site name appears as "Coach Name" in `index.html`, `plans/index.html` and `assets/app.js` (`SITE_NAME`).
+The homepage copy is in `index.html`. The site name "ATcoaching" appears in `index.html`, `plans/index.html` and `assets/app.js` (`SITE_NAME`).
 
 ## Run locally
 
