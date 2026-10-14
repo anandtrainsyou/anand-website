@@ -1,0 +1,731 @@
+<meta charset="utf-8">
+<title>The Fat Loss Map</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap">
+<style>
+/* Layout: one screen. The films' Minecraft sky behind (dawn → day → dusk → night as you read), a slim top bar (map + step),
+   the book filling the middle (one step per page, long pages scroll inside), arrow buttons, XP bar + hotbar at the bottom.
+   Type: Rubik for everything you read; the Minecraft font only for the game HUD.
+   System rules (keep them when adding things):
+   - Spacing comes from --sp-1..4 (4/8/12/16). Blocks sit 12px apart; items inside a block 8px apart.
+   - Three callouts, one job each: .tip (dark tooltip) = advice, .note (green) = good to know, .warn (red) = watch out.
+   - Anything you can tap is a pixel button (.seg button, .cta, .sound, .arrow) or a ruled row (.toc a). Static boxes (.card, .meal) are flat.
+   - Food colours mean the same thing everywhere: protein purple, carbs orange, veg green, fruit red, fat yellow (the MyPlate colours). */
+@font-face{font-family:"MC";src:url("assets/minecraft.ttf") format("truetype");font-display:block}
+:root{
+  --ink:#1d1812; --ink-soft:#5c5245; --ink-faint:#8a7d6a; --red:#a11c12; --green:#2e7d1a; --gold:#ffaa00; --yellow:#ffff55; --white:#fff;
+  --tip:#160d20f2; --rule:#d9cba6; --card:#f8f0da; --card-hi:#fff8e6; --chip:#efe3c4;
+  --c-protein:#7b4fa6; --c-carb:#d9822b; --c-veg:#4f8a2b; --c-fruit:#c8453a; --c-fat:#e0b020;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --tap:44px;
+  --fs-fine:11.5px; --fs-small:13px; --fs-sec:14px; --fs-body:15.5px; --fs-lede:16.5px; --fs-h3:17px; --fs-h2:24px; --fs-h1:30px;
+  --mc:"MC", "Courier New", monospace; --read:"Rubik", "Segoe UI", Arial, sans-serif; --s:2;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{height:100%;overflow:hidden}
+body{margin:0;background:#1b2140;color:var(--white);font-family:var(--read);overscroll-behavior:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#bg{position:fixed;inset:0;z-index:0}
+img{image-rendering:pixelated}
+button{font-family:inherit}
+.app{position:relative;z-index:1;height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;grid-template-columns:minmax(0,1fr);max-width:520px;margin:0 auto;padding-inline:var(--sp-2);box-sizing:border-box}
+.shadow{text-shadow:2px 2px 0 #2a2a2a}
+/* focus: white on the dark HUD, ink on the cream book */
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.content :focus-visible{outline-color:var(--ink)}
+/* top bar */
+.top{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-1) var(--sp-2);margin-top:var(--sp-1);background:#00000059;font-family:var(--mc)}
+.mini{all:unset;cursor:pointer;width:40px;height:40px;flex:none}
+.mini canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+.where{flex:1;min-width:0;font-size:14px;line-height:17px}.where small{display:block;color:#ddd;font-size:14px}.where b{font-weight:400;color:var(--yellow);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sound{all:unset;box-sizing:border-box;cursor:pointer;flex:none;min-height:36px;display:flex;align-items:center;padding:0 var(--sp-2);font:13px var(--mc);color:#fff;
+  border:6px solid transparent;border-image:url("assets/button.png") 3 fill / 6px;image-rendering:pixelated}
+.sound[aria-pressed="true"]{border-image-source:url("assets/button_hi.png");color:var(--yellow)}
+.sound:active,.seg button:active,.cta:active{transform:translateY(1px)}
+/* book */
+.bookwrap{min-height:0;display:flex;justify-content:center;perspective:1800px;padding-top:var(--sp-1)}
+.book{position:relative;width:100%;max-width:470px;height:100%;box-sizing:border-box;border-style:solid;
+  border-width:calc(10px*var(--s)) calc(14px*var(--s)) calc(12px*var(--s)) calc(14px*var(--s));
+  border-image:url("assets/book.png") 10 14 12 14 fill / calc(10px*var(--s)) calc(14px*var(--s)) calc(12px*var(--s)) calc(14px*var(--s));
+  display:flex;flex-direction:column;color:var(--ink);transform-style:preserve-3d}
+.content{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:var(--sp-1) 6px var(--sp-3);font-size:var(--fs-body);line-height:1.5;scrollbar-width:thin;scrollbar-color:#b89a62 transparent;-webkit-overflow-scrolling:touch}
+.more{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);font-family:var(--mc);font-size:14px;color:#fff;background:#2a1f14e6;border:2px solid #000;padding:3px 10px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s;z-index:2}
+.book.has-more .more{opacity:1;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translate(-50%,3px)}}
+.bnav{display:flex;justify-content:flex-end;align-items:center;gap:var(--sp-3);margin-top:var(--sp-1);padding:var(--sp-1) var(--sp-2);background:#00000066;font-family:var(--mc)}
+.navhint{flex:1;font-size:13px;color:#ddd}
+.arrow{all:unset;position:relative;cursor:pointer;width:69px;height:39px;padding:0;background-size:100% 100%;image-rendering:pixelated;flex:none;transition:opacity .12s}
+.arrow::after{content:"";position:absolute;inset:-6px}
+.arrow.back{width:54px;height:31px;background-image:url("assets/page_back.png")}.arrow.back:hover,.arrow.back:focus-visible{background-image:url("assets/page_back_hi.png")}
+.arrow.fwd{background-image:url("assets/page_fwd.png")}.arrow.fwd:hover,.arrow.fwd:focus-visible{background-image:url("assets/page_fwd_hi.png")}
+.arrow[disabled]{visibility:hidden}
+.bnav.busy .arrow{opacity:.4;pointer-events:none}
+/* page turn: a real sheet with a back side, hinged on the left binding */
+.sheet{position:absolute;inset:calc(-10px*var(--s)) calc(-14px*var(--s)) calc(-12px*var(--s)) calc(-14px*var(--s));transform-style:preserve-3d;transform-origin:left center;pointer-events:none;z-index:5}
+.sheet>div{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-style:solid;
+  border-width:calc(10px*var(--s)) calc(14px*var(--s)) calc(12px*var(--s)) calc(14px*var(--s));
+  border-image:url("assets/book.png") 10 14 12 14 fill / calc(10px*var(--s)) calc(14px*var(--s)) calc(12px*var(--s)) calc(14px*var(--s));display:flex;flex-direction:column;overflow:hidden}
+.sheet .face .content{overflow:hidden}
+.sheet .rear{transform:rotateY(180deg);filter:brightness(.82) sepia(.15)}
+.sheet .shade{position:absolute;inset:0;background:linear-gradient(90deg,#0000 40%,#0003);pointer-events:none}
+.sheet.fwd{animation:turnF .4s cubic-bezier(.45,.05,.4,1) forwards}
+.sheet.back{animation:turnB .4s cubic-bezier(.45,.05,.4,1) forwards}
+@keyframes turnF{0%{transform:rotateY(0)}100%{transform:rotateY(-178deg);opacity:.0}}
+@keyframes turnB{0%{transform:rotateY(-178deg);opacity:.2}100%{transform:rotateY(0);opacity:1}}
+@media (prefers-reduced-motion:reduce){.sheet{display:none}}
+/* type hierarchy */
+.kicker{font-weight:700;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--red);margin:var(--sp-1) 0 2px}
+.content h2{font-weight:800;font-size:var(--fs-h2);line-height:1.15;margin:0 0 var(--sp-2);display:flex;gap:var(--sp-3);align-items:flex-start;justify-content:space-between;text-wrap:balance;letter-spacing:-.01em}
+.content h2 img{width:30px;height:30px;flex:none;margin-top:1px}
+.lede{font-size:var(--fs-lede);line-height:1.45;margin:0 0 var(--sp-3);color:var(--ink)}
+.content h3{font-weight:700;font-size:var(--fs-h3);line-height:1.25;margin:var(--sp-4) 0 var(--sp-2);padding-top:var(--sp-3);border-top:2px solid var(--rule);display:flex;justify-content:space-between;gap:var(--sp-2);align-items:center}
+.content h3 img{width:20px;height:20px;flex:none}
+.content h3.flush{border-top:0;padding-top:0;margin:var(--sp-2) 0}
+.content h4{font-weight:700;font-size:var(--fs-body);margin:var(--sp-3) 0 2px}
+.content p{margin:0 0 var(--sp-3)}
+.small{font-size:var(--fs-small);color:var(--ink-soft);line-height:1.4}
+.fine{font-size:var(--fs-fine);color:var(--ink-faint);line-height:1.4;margin-top:var(--sp-4)!important}
+strong{font-weight:700}
+.hl{color:var(--red);font-weight:700}
+.content ul,.content ol{margin:0 0 var(--sp-3);padding:0;list-style:none}
+.content ul>li{position:relative;padding-left:var(--sp-4);margin:0 0 var(--sp-2)}
+.content ul>li::before{content:"";position:absolute;left:2px;top:.62em;width:6px;height:6px;background:var(--red)}
+.content ol{counter-reset:n}
+.content ol>li{position:relative;padding-left:32px;margin:0 0 var(--sp-2);counter-increment:n;min-height:24px}
+.content ol>li::before{content:counter(n);position:absolute;left:0;top:0;width:24px;height:24px;background:var(--ink);color:#fff;font-weight:700;font-size:var(--fs-small);line-height:24px;text-align:center}
+/* callouts: tip = advice, note = good to know, warn = watch out */
+.tip,.note,.warn{padding:var(--sp-2) var(--sp-3);margin:0 0 var(--sp-3);font-size:var(--fs-sec);line-height:1.45}
+.tip{background:var(--tip);color:#eee;border:2px solid #100010;box-shadow:inset 0 0 0 2px #5000ff80}
+.tip b{color:var(--yellow);display:block;margin-bottom:2px;font-weight:700}
+.tip em{color:#ffd27a;font-style:normal;font-weight:500}
+.note{border-left:4px solid var(--green);background:#eef3dc}
+.warn{border-left:4px solid var(--red);background:#f7e1d6}
+/* cards: flat, not tappable */
+.cards{display:grid;gap:var(--sp-2);margin:0 0 var(--sp-3)}
+.cards.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:var(--card);border:2px solid var(--rule);padding:var(--sp-2) var(--sp-3);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px var(--sp-3);align-items:start;align-content:start}
+.card b{font-weight:700;font-size:var(--fs-body);line-height:1.3}
+.card p{grid-column:1;margin:0;font-size:var(--fs-sec);color:var(--ink-soft);line-height:1.45}
+.card>img{grid-column:2;grid-row:1/span 2;width:28px;height:28px}
+.cards.two .card{grid-template-columns:minmax(0,1fr);padding:var(--sp-2)}
+.card.big{background:#f7e1d6;border-color:#d9a08a}
+.cmd{font-family:var(--mc);font-size:var(--fs-small);color:var(--green);font-weight:400;margin-right:6px}
+/* cover */
+.cover-by{font-size:var(--fs-small);color:var(--ink-soft);margin:6px 0 var(--sp-1)!important;font-weight:500}
+.cover h1{font-weight:800;font-size:var(--fs-h1);line-height:1.08;margin:0 0 6px;letter-spacing:-.015em;text-wrap:balance}
+.cover .lede{margin-bottom:6px}
+.toc{display:flex;flex-direction:column;margin:var(--sp-3) 0 0;border-top:2px solid var(--ink)}
+.toc a{all:unset;box-sizing:border-box;cursor:pointer;min-height:var(--tap);display:grid;grid-template-columns:28px minmax(0,1fr) 24px;gap:var(--sp-3);align-items:center;padding:var(--sp-2) 2px;border-bottom:2px solid var(--rule)}
+.toc .n{width:26px;height:26px;background:var(--ink);color:#fff;font-weight:700;font-size:var(--fs-small);line-height:26px;text-align:center}
+.toc b{display:block;font-weight:700;font-size:var(--fs-body);line-height:1.25}
+.toc span{display:block;font-size:var(--fs-small);color:var(--ink-soft);line-height:1.3}
+.toc img{width:22px;height:22px}
+.toc a:hover b,.toc a:active b{color:var(--red)}
+.start{margin-top:var(--sp-3);font-size:var(--fs-small);color:var(--ink-soft);text-align:right}
+/* calculator */
+.calc{background:#efe4c5;border:2px solid var(--rule);padding:var(--sp-3);margin:0 0 var(--sp-3)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2) var(--sp-3)}
+.fields label,.lbl{display:flex;flex-direction:column;gap:var(--sp-1);min-width:0;font-size:var(--fs-small);font-weight:500;color:var(--ink-soft);line-height:1.25}
+.fields .wide{grid-column:1/-1}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+input{font:500 16px var(--read);color:#eee;background:#111;border:2px solid #8a8a8a;padding:6px var(--sp-2);width:100%;box-sizing:border-box;min-width:0;border-radius:0;height:var(--tap);-moz-appearance:textfield}
+input::-webkit-inner-spin-button{-webkit-appearance:none}
+input:focus{outline:none;border-color:#fff}
+input::placeholder{color:#888}
+.calc .lbl+.lbl,.calc .hint+label{margin-top:var(--sp-2)}
+.content .hint{font-size:var(--fs-small);color:var(--ink-soft);line-height:1.4;margin:var(--sp-2) 0 0;min-height:calc(1.4em*3)}
+/* segmented choice: pixel buttons (the same look as .cta) */
+.seg{display:grid;grid-auto-columns:minmax(0,1fr);grid-auto-flow:column;gap:var(--sp-1)}
+.seg button{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;font:700 14.5px var(--read);color:#fff;text-shadow:1px 1px 0 #333;min-height:var(--tap);padding:var(--sp-1) 6px;line-height:1.2;
+  border:6px solid transparent;border-image:url("assets/button.png") 3 fill / 6px;image-rendering:pixelated;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.seg button small{font-weight:500;font-size:var(--fs-fine);opacity:.9}
+.seg button[aria-pressed="true"]{border-image-source:url("assets/button_hi.png");color:var(--yellow)}
+.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:var(--sp-3)}
+.results.three{grid-template-columns:repeat(3,minmax(0,1fr));margin:0 0 var(--sp-3)}
+.res{background:var(--tip);border:2px solid #100010;box-shadow:inset 0 0 0 2px #5000ff80;padding:6px var(--sp-2);color:#c9c3d6;font-size:12px;line-height:1.3}
+.res b{display:block;font-weight:800;font-size:21px;line-height:1.2;color:var(--gold)}
+.res.wide{grid-column:1/-1}
+.res.wide b{font-size:17px}
+/* plate: MyPlate-style. Half veg + fruit, a quarter protein, a quarter carbs, fat as the small cup on the side */
+.plate{margin:0 0 var(--sp-3)}
+.plate svg{width:min(210px,70%);height:auto;display:block;margin:0 auto var(--sp-2)}
+.legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2) var(--sp-3);font-size:var(--fs-sec);line-height:1.3}
+.legend div{display:grid;grid-template-columns:14px minmax(0,1fr);gap:var(--sp-2);align-items:start}
+.legend i{width:14px;height:14px;margin-top:2px;box-shadow:inset 0 0 0 2px #0002}
+.legend b{font-weight:700;display:block}
+.legend span span{display:block;color:var(--ink-soft);font-size:var(--fs-small)}
+/* meals */
+.mealgroup{font-weight:800;font-size:18px;margin:var(--sp-4) 0 var(--sp-2);display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--ink);padding-bottom:var(--sp-1)}
+.mealgroup span{font-size:12px;font-weight:500;color:var(--ink-soft)}
+.meal{background:var(--card);border:2px solid var(--rule);padding:var(--sp-2) var(--sp-3);margin:0 0 var(--sp-2)}
+.meal .hd{display:flex;justify-content:space-between;gap:var(--sp-2);align-items:baseline}
+.meal b{font-weight:700;font-size:var(--fs-body);line-height:1.25}
+.meal .num{font-size:12.5px;font-weight:700;color:var(--green);white-space:nowrap}
+.meal p{margin:2px 0 6px!important;font-size:var(--fs-sec);color:var(--ink-soft);line-height:1.4}
+.meal .ft{display:flex;flex-wrap:wrap;gap:var(--sp-1);align-items:center}
+.chip{display:inline-flex;gap:3px;align-items:center;font-size:var(--fs-fine);font-weight:500;background:#fff8;border:1px solid var(--rule);padding:1px 5px 1px 3px;line-height:16px}
+.chip img{width:14px;height:14px}
+.chip.off{opacity:.32}
+.tag{font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:1px 6px;line-height:16px;color:#fff;margin-left:auto}
+.tag.protein{background:var(--c-protein)}.tag.carb{background:var(--c-carb)}.tag.fiber{background:var(--c-veg)}.tag.balanced{background:#6a5a8c}
+.veg{font-size:11px;font-weight:700;color:#fff;background:var(--c-veg);padding:1px 5px;line-height:16px}
+/* label */
+.label{background:#fff;color:#000;border:2px solid #000;font-family:Arial,Helvetica,sans-serif;font-size:var(--fs-small);line-height:1.25;padding:var(--sp-1) 7px 6px;margin:0 0 var(--sp-3);box-shadow:3px 3px 0 #0003}
+.label .t{font-size:26px;font-weight:900;line-height:1;letter-spacing:-.5px;padding-bottom:2px}
+.label .r{display:flex;justify-content:space-between;border-top:1px solid #000;padding:2px 0}
+.label .thick{border-top:8px solid #000}.label .med{border-top:4px solid #000}
+.label .cal{font-size:21px;font-weight:900;align-items:baseline}
+.label .ind{padding-left:12px}
+.label .bx{position:relative}
+.label .why{font-family:var(--read);font-size:var(--fs-small);line-height:1.4;background:#fff5bf;border-left:4px solid var(--red);padding:6px var(--sp-2);margin:3px -7px var(--sp-1);color:var(--ink)}
+.label .why b{color:var(--red)}
+.label small{display:block;font-size:10px;border-top:4px solid #000;padding-top:2px}
+.chart{margin:0 0 var(--sp-3)}
+.chart svg{width:100%;height:auto;display:block}
+/* timeline */
+.tl{display:flex;height:34px;margin:var(--sp-2) 0 var(--sp-1);font-size:var(--fs-fine);font-weight:700;color:#fff;text-align:center}
+.tl div{display:flex;align-items:center;justify-content:center;line-height:1.1;padding:0 3px}
+.tl .d{background:var(--c-protein)}.tl .m{background:var(--c-veg)}
+.tlk{display:flex;justify-content:space-between;font-size:var(--fs-fine);color:var(--ink-soft);margin-bottom:var(--sp-3)}
+/* co-op */
+.coop{display:grid;grid-template-columns:120px minmax(0,1fr);gap:var(--sp-3);align-items:end;margin:var(--sp-1) 0 var(--sp-2)}
+#avatar{height:180px}
+.cta{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;justify-content:center;width:100%;min-height:var(--tap);margin:var(--sp-2) 0 0;font:700 16px var(--read);color:var(--yellow);text-shadow:2px 2px 0 #333;
+  border:6px solid transparent;border-image:url("assets/button_hi.png") 3 fill / 6px;image-rendering:pixelated;text-align:center}
+.cta.alt{color:#fff;border-image-source:url("assets/button.png")}
+/* hud (Minecraft font) */
+.hud{padding-block:var(--sp-1) calc(6px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--mc)}
+.xp{position:relative;width:min(364px,100%);aspect-ratio:182/5;background:url("assets/xp_bg.png") 0 0/100% 100%}
+.xp i{position:absolute;inset:0 auto 0 0;background:url("assets/xp_fg.png") 0 0/min(364px,calc(100vw - 16px)) 100% no-repeat;transition:width .3s}
+.lvl{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);color:#80ff20;font-size:16px;text-shadow:2px 0 0 #000,-2px 0 0 #000,0 2px 0 #000,0 -2px 0 #000}
+.hotbar{position:relative;width:min(364px,100%);aspect-ratio:182/22;background:url("assets/hotbar.png") 0 0/100% 100%}
+.slot{all:unset;cursor:pointer;position:absolute;top:calc(100%*3/22);width:calc(100%*16/182);height:calc(100%*16/22)}
+.slot::after{content:"";position:absolute;inset:-8px -4px}
+.slot img{width:100%;height:100%;display:block}.slot.locked img{filter:brightness(.45)}
+.sel{position:absolute;top:calc(-100%/22);width:calc(100%*24/182);height:calc(100%*24/22);background:url("assets/hotbar_sel.png") 0 0/100% 100%;pointer-events:none;transition:left .15s}
+/* toast */
+.toast{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:8px;width:300px;max-width:calc(100% - 16px);aspect-ratio:160/32;background:url("assets/toast.png") 0 0/100% 100%;image-rendering:pixelated;
+  display:flex;align-items:center;gap:var(--sp-3);padding-left:14px;box-sizing:border-box;transform:translateX(120%);transition:transform .4s;z-index:20;font:15px var(--mc);pointer-events:none}
+.toast.show{transform:none}
+.toast img{width:30px;height:30px}
+.toast small{display:block;color:var(--yellow);font-size:15px}
+/* map */
+.mapview{position:fixed;inset:0;background:#000b;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-3);padding:var(--sp-4);box-sizing:border-box;font-family:var(--mc)}
+.mapview canvas{width:min(92vw,62vh,520px);height:auto;aspect-ratio:1;image-rendering:pixelated}
+.mapview p{margin:0;color:#eee;text-align:center}
+.mapview button{all:unset;cursor:pointer;min-height:var(--tap);display:flex;align-items:center;box-sizing:border-box;color:#fff;text-shadow:2px 2px 0 #333;padding:0 var(--sp-4);border:6px solid transparent;border-image:url("assets/button.png") 3 fill / 6px}
+@media (max-width:380px),(max-height:700px){:root{--s:1.5;--fs-body:15px;--fs-h2:22px}}
+@media (min-height:900px) and (min-width:600px){:root{--s:2.5}}
+</style>
+
+<div id="bg" aria-hidden="true"></div>
+<div class="app">
+  <header class="top">
+    <button class="mini" id="mini" aria-label="Open the map"><canvas id="minimap" width="96" height="96"></canvas></button>
+    <div class="where shadow"><small id="steplbl">Start</small><b id="where">The Fat Loss Map</b></div>
+    <button class="sound shadow" id="sound" aria-pressed="true">Sound on</button>
+  </header>
+  <div class="bookwrap"><article class="book" id="book">
+    <div class="content" id="content"></div>
+    <div class="more" aria-hidden="true">Scroll for more v</div>
+  </article></div>
+  <div class="bnav"><span class="navhint shadow" id="navhint">Next page</span><button class="arrow back" id="prev" aria-label="Previous page"></button><button class="arrow fwd" id="next" aria-label="Next page"></button></div>
+  <footer class="hud">
+    <div class="xp"><i id="xpfill"></i><span class="lvl" id="lvl">0</span></div>
+    <div class="hotbar" id="hotbar"><div class="sel" id="sel"></div></div>
+  </footer>
+</div>
+<div class="toast" id="toast" role="status"><img id="toastimg" alt=""><div><small>Step complete!</small><span id="toasttxt"></span></div></div>
+<div class="mapview" id="mapview" hidden>
+  <canvas id="bigmap" width="288" height="288" aria-label="Your route through the guide"></canvas>
+  <p class="shadow" id="maptxt"></p>
+  <button id="closemap">Back to the book</button>
+</div>
+
+<!-- Each <section> is one step. <hr class="pb"> starts another page inside the same step. -->
+<template id="tpl">
+<section data-icon="written_book" data-t="The Fat Loss Map">
+  <div class="cover">
+    <p class="cover-by">The Fat Loss Map · by @anandtrainsyou</p>
+    <h1>11 short steps to lose fat without hating it</h1>
+    <p class="lede">And keep it off. Each step takes a few minutes. Tap one to jump to it, or use the arrow to start.</p>
+  </div>
+  <nav class="toc" id="toc" aria-label="Steps"></nav>
+</section>
+
+<section data-icon="compass" data-t="Find your calories" data-d="How much to eat to lose fat" data-a="You found your calories">
+  <p class="kicker">Step 1 of 11</p>
+  <h2>Find your calories <img src="assets/icons/compass.png" alt=""></h2>
+  <p class="lede">Your body burns a certain number of calories every day. That's your <strong>maintenance</strong>. Eat a bit less than that, and your body uses stored fat for the rest.</p>
+  <div class="calc">
+    <div class="fields">
+      <div class="lbl wide">Units<div class="seg" data-k="units"><button data-v="metric">kg / cm</button><button data-v="imperial">lb / ft</button></div></div>
+      <div class="lbl wide">Sex<div class="seg" data-k="sex"><button data-v="m">Male</button><button data-v="f">Female</button></div></div>
+      <label for="c-age">Age<input id="c-age" data-save type="number" inputmode="numeric" value="28"></label>
+      <label for="c-w"><span data-u="Weight (kg)|Weight (lb)">Weight (kg)</span><input id="c-w" data-save type="number" inputmode="decimal" value="80"></label>
+      <label for="c-h" data-metric>Height (cm)<input id="c-h" data-save type="number" inputmode="numeric" value="176"></label>
+      <div class="lbl" data-imperial hidden>Height (ft, in)<div class="pair"><input id="c-ft" data-save type="number" inputmode="numeric" value="5" aria-label="Feet"><input id="c-in" data-save type="number" inputmode="numeric" value="9" aria-label="Inches"></div></div>
+      <label for="c-steps">Steps a day<input id="c-steps" data-save type="number" inputmode="numeric" value="8000"></label>
+      <label for="c-lift">Workouts a week<input id="c-lift" data-save type="number" inputmode="numeric" value="3"></label>
+      <div class="lbl wide">How fast do you want to lose?<div class="seg" data-k="pace">
+        <button data-v="300">Gentle<small>easiest</small></button><button data-v="500">Steady<small>recommended</small></button><button data-v="750">Fast<small>hardest</small></button></div></div>
+    </div>
+    <div class="results">
+      <div class="res">You burn about<b id="r-maint">-</b></div>
+      <div class="res">Eat about<b id="r-target">-</b></div>
+      <div class="res wide">That's roughly <b id="r-rate" style="display:inline">-</b> of fat a week</div>
+    </div>
+  </div>
+  <h3>Why go slow?</h3>
+  <p>A smaller cut means <strong>less hunger, more energy and you keep your muscle</strong>. Crash diets are where most people quit. Losing about 0.5 kg (1 lb) a week adds up to over 10 kg (25 lb) in six months.</p>
+  <div class="tip"><b>Pro tip</b>These numbers are a starting estimate. After 2–3 weeks, your <em>weekly average weight</em> (Step 6) shows whether you need to eat a bit more or less.</div>
+  <p class="fine">Uses the Mifflin-St Jeor formula plus your steps and workouts. 1 kg of fat ≈ 7,700 kcal, 1 lb ≈ 3,500 kcal.</p>
+</section>
+
+<section data-icon="cooked_beef" data-t="Your daily targets" data-d="Protein, fat and carbs, in grams" data-a="Targets set">
+  <p class="kicker">Step 2 of 11</p>
+  <h2>Your daily targets <img src="assets/icons/cooked_beef.png" alt=""></h2>
+  <p class="lede">Calories come from three things: <strong>protein, fat and carbs</strong>. Getting the mix right is what makes you lose <em>fat</em> instead of muscle, and stay full while you do it.</p>
+  <h3 class="flush">Protein: the most important one <img src="assets/icons/cooked_chicken.png" alt=""></h3>
+  <p>Protein protects your muscle while you eat less, and keeps you full longer than any other food. Research points to <strong>1.6 to 2.2 g per kg</strong> of body weight a day: benefits level off around 1.6, and 2.2 is the top of what's been studied. <strong>Where you land in that range depends on you.</strong></p>
+  <div class="calc">
+    <div class="lbl">Where in the range?<div class="seg" data-k="goal">
+      <button data-v="1.6">Lower<small>1.6 g/kg</small></button><button data-v="1.9">Middle<small>1.9 g/kg</small></button><button data-v="2.2">Higher<small>2.2 g/kg</small></button></div></div>
+    <p class="hint" id="goalhint"></p>
+    <label for="m-goal" class="lbl"><span data-u="Carrying extra weight? Use your goal weight or lean mass (kg)|Carrying extra weight? Use your goal weight or lean mass (lb)">Carrying extra weight? Use your goal weight or lean mass (kg)</span><input id="m-goal" data-save type="number" inputmode="decimal" placeholder="Optional"></label>
+    <div class="results">
+      <div class="res">Protein a day<b id="r-p">-</b></div>
+      <div class="res">Per meal (4 meals)<b id="r-pm">-</b></div>
+    </div>
+  </div>
+  <p class="small">Uses your weight from Step 1. If you're carrying a lot of extra weight, enter your <strong>goal weight or lean body mass</strong> instead. Muscle, not fat, sets how much protein you need, and your total weight would give you far more than you need.</p>
+  <div class="tip"><b>What 40 g of protein looks like</b>150 g chicken breast, or a 250 g tub of 0% Greek yogurt plus an egg, or 200 g firm tofu.</div>
+  <hr class="pb">
+  <p class="kicker">Step 2 of 11 · continued</p>
+  <h2>Fat and carbs <img src="assets/icons/honey_bottle.png" alt=""></h2>
+  <div class="results three">
+    <div class="res">Fat<b id="r-f">-</b></div>
+    <div class="res">Carbs<b id="r-c">-</b></div>
+    <div class="res">Sat. fat max<b id="r-sf">-</b></div>
+  </div>
+  <h3 class="flush">Fat: 50–60 g a day for most people <img src="assets/icons/honey_bottle.png" alt=""></h3>
+  <p>You need some fat for your hormones and to absorb vitamins. Fat is calorie-dense (9 kcal per gram), so a little goes a long way. Not all fats are the same:</p>
+  <div class="cards">
+    <div class="card"><b>Unsaturated fats: eat these most</b><p>Usually liquid at room temperature. <strong>Monounsaturated:</strong> olive oil, avocado, almonds, peanuts. <strong>Polyunsaturated:</strong> seed oils (sunflower, canola), seeds, and oily fish. Seed oils are fine.</p></div>
+    <div class="card"><b>Omega-3: a special kind</b><p>Eat fatty fish (salmon, sardines, mackerel) twice a week, or take a fish-oil supplement with about <strong>2,000 mg EPA + DHA</strong> a day.</p></div>
+    <div class="card big"><b>Saturated fats: keep these small</b><p>Usually solid at room temperature: butter, ghee, cheese, fatty meat, coconut oil. Fine in small amounts. Keep them <strong>under 10% of your calories</strong>.</p></div>
+  </div>
+  <h3>Carbs: whatever calories are left <img src="assets/icons/baked_potato.png" alt=""></h3>
+  <p>Carbs fuel your workouts and bring fiber, which keeps you full. Pick the ones that fill you up most:</p>
+  <ul>
+    <li><strong>Potatoes and sweet potatoes</strong>: the most filling food ever tested</li>
+    <li><strong>Oats, rice, quinoa, wholegrain bread</strong></li>
+    <li><strong>Beans and lentils</strong>: carbs, fiber and protein in one</li>
+    <li><strong>Fruit</strong>: berries, apples, oranges, bananas</li>
+    <li><strong>Air-popped popcorn</strong>: a huge bowl for few calories</li>
+  </ul>
+  <p class="fine">These ranges come from sports-nutrition research on active people. Everyone is a little different, so adjust from your own results.</p>
+</section>
+
+<section data-icon="crafting_table_front" data-t="Build a filling meal" data-d="The plate, plus 23 meal ideas" data-a="Meal master">
+  <p class="kicker">Step 3 of 11</p>
+  <h2>Build a filling meal <img src="assets/icons/crafting_table_front.png" alt=""></h2>
+  <p class="lede">You don't need a meal plan. You need one simple way to build a plate, and you can use it for every meal.</p>
+  <div class="plate">
+    <svg viewBox="0 0 200 150" role="img" aria-label="A plate: half veg and fruit, a quarter protein, a quarter carbs, plus a small cup of fat on the side">
+      <circle cx="70" cy="77" r="70" fill="#fff" stroke="#d9cba6" stroke-width="2"/>
+      <g stroke="#fff" stroke-width="3" stroke-linejoin="round">
+        <path d="M70 77 L8 77 A62 62 0 0 1 48.8 18.7 Z" fill="#c8453a"/>
+        <path d="M70 77 L48.8 18.7 A62 62 0 0 1 132 77 Z" fill="#4f8a2b"/>
+        <path d="M70 77 L132 77 A62 62 0 0 1 70 139 Z" fill="#7b4fa6"/>
+        <path d="M70 77 L70 139 A62 62 0 0 1 8 77 Z" fill="#d9822b"/>
+      </g>
+      <circle cx="165" cy="40" r="26" fill="#fff" stroke="#d9cba6" stroke-width="2"/><circle cx="165" cy="40" r="21" fill="#e0b020"/>
+      <g image-rendering="pixelated">
+        <image href="assets/icons/apple.png" x="29" y="44" width="22" height="22"/>
+        <image href="assets/icons/carrot.png" x="81" y="35" width="24" height="24"/>
+        <image href="assets/icons/cooked_chicken.png" x="87" y="93" width="24" height="24"/>
+        <image href="assets/icons/baked_potato.png" x="31" y="93" width="24" height="24"/>
+        <image href="assets/icons/honey_bottle.png" x="153" y="28" width="24" height="24"/>
+      </g>
+    </svg>
+    <div class="legend">
+      <div><i style="background:linear-gradient(90deg,var(--c-fruit) 50%,var(--c-veg) 50%)"></i><span><b>Half: veg and fruit</b><span>Two fists, mostly veg</span></span></div>
+      <div><i style="background:var(--c-protein)"></i><span><b>Quarter: protein</b><span>One or two palms</span></span></div>
+      <div><i style="background:var(--c-carb)"></i><span><b>Quarter: carbs</b><span>About one fist</span></span></div>
+      <div><i style="background:var(--c-fat)"></i><span><b>On the side: fat</b><span>About a thumb: oil, nuts, cheese</span></span></div>
+    </div>
+  </div>
+  <h3>Why this works</h3>
+  <p><strong>Fiber and protein</strong> are what make a meal filling. Veg and fruit add lots of food for very few calories, so half the plate fills you up without filling your calorie budget.</p>
+  <div class="tip"><b>Pro tip</b>Salt to taste, but go easy on sauces. They're where hidden calories live (Step 5).</div>
+  <hr class="pb">
+  <p class="kicker">Step 3 of 11 · meal ideas</p>
+  <h2>23 meal ideas <img src="assets/icons/crafting_table_front.png" alt=""></h2>
+  <p class="lede">Every idea follows the plate. The icons show what each meal brings:</p>
+  <div class="ft" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">
+    <span class="chip"><img src="assets/icons/cooked_chicken.png" alt="">Protein</span><span class="chip"><img src="assets/icons/baked_potato.png" alt="">Carbs</span><span class="chip"><img src="assets/icons/apple.png" alt="">Fiber</span><span class="chip"><img src="assets/icons/honey_bottle.png" alt="">Fat</span><span class="veg">V</span><span class="small">= vegetarian</span>
+  </div>
+  <div id="meals"></div>
+  <p class="fine">Calories and protein are rough estimates. They change with brands and portions, so log what you actually eat.</p>
+</section>
+
+<section data-icon="paper" data-t="Read the food label" data-d="Log what you really eat" data-a="Label reader">
+  <p class="kicker">Step 4 of 11</p>
+  <h2>Read the food label <img src="assets/icons/paper.png" alt=""></h2>
+  <p class="lede">Tracking only works if you log what you <em>really</em> ate. Here's a label from a box of cereal, read from the top down:</p>
+  <div class="label" aria-label="A nutrition label explained line by line">
+    <div class="t">Nutrition Facts</div>
+    <div class="r" style="border-top:0">9.5 servings per container</div>
+    <div class="r med" style="font-weight:700"><span>Serving size</span><span>1 cup (40 g)</span></div>
+    <div class="why"><b>1. Start here.</b> Every number below is for <strong>one serving (40 g)</strong>, not the whole box. A box holds 9.5 servings.</div>
+    <div class="r thick cal"><span>Calories <span style="font-size:11px">per serving</span></span><span>150</span></div>
+    <div class="why"><b>2. Calories are per serving.</b> Poured 90 g? That's 90 ÷ 40 × 150 = <strong>338 kcal</strong>, not 150.</div>
+    <div class="r med" style="justify-content:flex-end;font-weight:700;font-size:11px">% Daily Value*</div>
+    <div class="r"><span><b>Total Fat</b> 2 g</span><b>3%</b></div>
+    <div class="r ind"><span>Saturated Fat 0.5 g</span><b>3%</b></div>
+    <div class="why"><b>3. Fat.</b> Count the grams. Saturated fat is the one to keep small (Step 2).</div>
+    <div class="r"><span><b>Total Carbohydrate</b> 30 g</span><b>11%</b></div>
+    <div class="r ind"><span>Dietary Fiber 3 g</span><b>11%</b></div>
+    <div class="r ind"><span>Total Sugars 9 g</span><span></span></div>
+    <div class="why"><b>4. Carbs and fiber.</b> More fiber means more filling. Lots of sugar and little fiber means you'll be hungry again soon.</div>
+    <div class="r"><span><b>Protein</b> 4 g</span><span></span></div>
+    <div class="why"><b>5. Protein.</b> 4 g is low. Pair it with yogurt or eggs to make a filling breakfast.</div>
+    <small>*The % Daily Value tells you how much a nutrient in a serving contributes to a daily diet.</small>
+    <div class="why" style="margin-bottom:0"><b>6. Skip the % column.</b> It's based on a 2,000 kcal diet that isn't yours. Use the grams.</div>
+  </div>
+  <div class="tip"><b>Pro tip</b>Weigh food in <em>grams</em> with a cheap kitchen scale. "1 cup" and "1 spoon" are guesses, and the guesses are usually low.</div>
+</section>
+
+<section data-icon="lava_still" data-t="Common tracking mistakes" data-d="Where hidden calories hide" data-a="Mistakes spotted">
+  <p class="kicker">Step 5 of 11</p>
+  <h2>Common tracking mistakes <img src="assets/icons/lava_still.png" alt=""></h2>
+  <p class="lede">"I'm eating so little and nothing's happening" almost always comes down to one of these. Check yourself against each one.</p>
+  <div class="cards">
+    <div class="card big"><b>1. Alcohol: the biggest one</b><img src="assets/icons/potion.png" alt=""><p><strong>7 kcal per gram</strong>, almost as much as fat, with no food value. It slows muscle recovery, wrecks your sleep and makes the late-night snack far more likely. Cutting it out is the biggest easy win. The same goes for cigarettes and drugs.</p></div>
+    <div class="card"><b>2. Cooking oil</b><img src="assets/icons/honey_bottle.png" alt=""><p>1 tablespoon is about <strong>120 kcal</strong>. Pour it into a spoon, not straight into the pan, and log it.</p></div>
+    <div class="card"><b>3. Sauces and dressings</b><img src="assets/icons/bowl.png" alt=""><p>Mayo, ketchup, pesto and salad dressing all count. A "light" salad with dressing can beat a burger.</p></div>
+    <div class="card"><b>4. Butter and spreads</b><img src="assets/icons/milk_bucket.png" alt=""><p>A thick spread of butter or peanut butter can be 100–200 kcal. Weigh it.</p></div>
+    <div class="card"><b>5. Raw vs cooked weight</b><img src="assets/icons/baked_potato.png" alt=""><p>Rice, pasta and meat change weight when cooked. Pick one way and stick to it. Weighing raw is the most accurate.</p></div>
+    <div class="card"><b>6. Bites, licks and tastes</b><img src="assets/icons/apple.png" alt=""><p>A bite of someone's toast, a taste while cooking, a handful of nuts. They add up fast.</p></div>
+    <div class="card"><b>7. Weekends</b><img src="assets/icons/clock.png" alt=""><p>Five good days and two "off" days can cancel out the whole week. Keep logging on weekends too.</p></div>
+  </div>
+</section>
+
+<section data-icon="experience_bottle" data-t="Read the scale" data-d="Why weekly averages beat daily weigh-ins" data-a="Scale pro">
+  <p class="kicker">Step 6 of 11</p>
+  <h2>Read the scale the right way <img src="assets/icons/experience_bottle.png" alt=""></h2>
+  <p class="lede">Your weight changes every day, even when your fat doesn't. If you react to every number, you'll panic over water.</p>
+  <h3 class="flush">Why it jumps around</h3>
+  <p>Water, salt, carbs, a late meal, a bathroom trip, your hormones and a hard workout can all move the scale by <strong>1–2 kg (2–4 lb) overnight</strong>. None of that is fat.</p>
+  <h3>How to weigh yourself</h3>
+  <ol>
+    <li><strong>Every day, the same way:</strong> morning, after the bathroom, before food or drink.</li>
+    <li><strong>Write it down.</strong> Most tracking apps have a weight log.</li>
+    <li><strong>Average each week.</strong> Add up the 7 days and divide by 7.</li>
+  </ol>
+  <div class="chart" id="chart"></div>
+  <h3>How to use the average</h3>
+  <p>Compare <strong>this week's average to last week's</strong>. That's your real trend. Losing about 0.5–1% of your weight a week means you're on track.</p>
+  <div class="tip"><b>Pro tip</b>If your weekly average hasn't moved for <em>2–3 weeks</em>, eat about 150 kcal less a day or walk more. Change one thing at a time.</div>
+  <h3>The scale isn't the whole story</h3>
+  <ul>
+    <li>Measure your <strong>waist</strong> every 2 weeks.</li>
+    <li>Take <strong>progress photos</strong> in the same light.</li>
+    <li>If you lift weights, you build some muscle while losing fat, so the scale drops more slowly. Your waist and photos will show the change.</li>
+  </ul>
+</section>
+
+<section data-icon="zombie" data-t="Hunger and cravings" data-d="What drives them and what helps" data-a="Hunger handled">
+  <p class="kicker">Step 7 of 11</p>
+  <h2>Hunger and cravings <img src="assets/icons/zombie.png" alt=""></h2>
+  <p class="lede">They feel the same, but they're different. <strong>Hunger</strong> is your body asking for food. <strong>Cravings</strong> are your brain wanting a specific food. You handle them differently.</p>
+  <h3 class="flush">What drives hunger</h3>
+  <ul>
+    <li><strong>Ghrelin</strong>, your hunger hormone, rises before the times you usually eat.</li>
+    <li><strong>Leptin</strong>, your "I'm full" hormone, falls as you lose fat, so hunger slowly creeps up over the weeks. That's normal.</li>
+    <li><strong>Meals low in protein and fiber</strong> digest fast and leave you hungry sooner.</li>
+    <li><strong>Short sleep</strong> and <strong>too big a deficit</strong> both turn hunger up.</li>
+  </ul>
+  <h3>What drives cravings</h3>
+  <ul>
+    <li><strong>Seeing food</strong>: ads, food videos, snacks on the counter.</li>
+    <li><strong>Stress and tiredness.</strong></li>
+    <li><strong>Banning foods completely</strong>, which makes you want them more.</li>
+    <li><strong>Habit</strong>: the same snack at the same time every day.</li>
+  </ul>
+  <h3>What helps at every meal</h3>
+  <div class="cards">
+    <div class="card"><b>Protein</b><img src="assets/icons/cooked_chicken.png" alt=""><p>The most filling thing you can eat. Have some at every meal.</p></div>
+    <div class="card"><b>Fiber</b><img src="assets/icons/apple.png" alt=""><p>Veg and fruit add volume for few calories, so your stomach feels full.</p></div>
+    <div class="card"><b>Filling carbs</b><img src="assets/icons/baked_potato.png" alt=""><p>Potatoes, oats and beans keep you going for hours.</p></div>
+    <div class="card"><b>A little fat</b><img src="assets/icons/honey_bottle.png" alt=""><p>Makes meals satisfying. Just measure it.</p></div>
+  </div>
+  <div class="tip"><b>Pro tip</b>Eat at regular times, and leave room for a small treat you enjoy. Planned treats stop cravings from building into a binge.</div>
+</section>
+
+<section data-icon="smithing_table_front" data-t="Easy food you love" data-d="The skill that makes it last" data-a="Secret skill learned">
+  <p class="kicker">Step 8 of 11 · the secret skill</p>
+  <h2>Cook food you love, and make it easy <img src="assets/icons/smithing_table_front.png" alt=""></h2>
+  <p class="lede">The most underrated skill in dieting: <strong>cook filling food you really enjoy, in ways that take almost no effort.</strong> If the meals at home are that good and that easy, you won't reach for the food that holds you back.</p>
+  <h3 class="flush">Make it taste good</h3>
+  <p>Flavour is almost free in calories. Try these pairings, and <strong>one new recipe a week</strong>. Keep the winners.</p>
+  <div class="cards two">
+    <div class="card"><b>Chicken</b><p>Garlic, smoked paprika, lemon, chilli</p></div>
+    <div class="card"><b>Beef</b><p>Cumin, chilli, soy sauce, black pepper</p></div>
+    <div class="card"><b>Fish</b><p>Lemon, dill, garlic, ginger</p></div>
+    <div class="card"><b>Veg and potatoes</b><p>Roast with garlic, herbs and a spray of oil</p></div>
+  </div>
+  <h3>Make it convenient: cook once, eat for days</h3>
+  <div class="cards">
+    <div class="card"><b>Chicken</b><img src="assets/icons/cooked_chicken.png" alt=""><p>Cook a big batch of breasts in one go, then eat it across the next few days.</p></div>
+    <div class="card"><b>Potatoes and sweet potatoes</b><img src="assets/icons/baked_potato.png" alt=""><p>Cook a tray, keep it in the fridge and reheat in 5 minutes. Endless sweet potatoes.</p></div>
+    <div class="card"><b>Veg</b><img src="assets/icons/carrot.png" alt=""><p>Use bags of mixed veg, fresh or frozen. Steam in the microwave and half your plate is done.</p></div>
+  </div>
+  <p>Then <strong>portion into boxes</strong> using the plate from Step 3. A meal in 5 minutes beats a takeaway.</p>
+  <div class="tip"><b>Pro tip</b>Cooked food keeps <em>3 to 4 days</em> in the fridge. Freeze the rest in single portions.</div>
+</section>
+
+<section data-icon="command_block_front" data-t="Easy wins" data-d="Small habits, big difference" data-a="Easy wins unlocked">
+  <p class="kicker">Step 9 of 11</p>
+  <h2>Easy wins <img src="assets/icons/command_block_front.png" alt=""></h2>
+  <div class="note"><strong>You'll be slightly hungrier than usual, and that's completely fine.</strong> It means it's working. Embrace it: expect it, and it gets much easier to live with.</div>
+  <p class="lede">These small habits make the whole thing easier. Pick two or three to start.</p>
+  <div class="cards">
+    <div class="card"><b><span class="cmd">/swap</span>Make smart swaps</b><p>0% yogurt, lower-fat cheese, leaner mince. Same food, fewer calories.</p></div>
+    <div class="card"><b><span class="cmd">/sweet</span>Go zero-sugar</b><p>Zero-sugar soda and sweeteners are fine if you tolerate them.</p></div>
+    <div class="card"><b><span class="cmd">/volume</span>Bulk up your plate</b><p>Add veg and fruit to every meal: more food, same calories.</p></div>
+    <div class="card"><b><span class="cmd">/steps</span>Walk more</b><p>Aim for 7–10k steps a day. Walking often burns more than the gym does.</p></div>
+    <div class="card"><b><span class="cmd">/gym</span>Lift weights</b><p>2–4 sessions a week tells your body to keep its muscle.</p></div>
+    <div class="card"><b><span class="cmd">/sleep</span>Sleep 7–9 hours</b><p>Short sleep means more hunger and worse food choices the next day.</p></div>
+    <div class="card"><b><span class="cmd">/mindful</span>Eat without screens</b><p>Chew properly and enjoy the food. You'll feel fuller for longer.</p></div>
+    <div class="card"><b><span class="cmd">/mute</span>Mute food content</b><p>Unfollow accounts that make you crave. Out of sight, out of mind.</p></div>
+    <div class="card"><b><span class="cmd">/home</span>Set up your kitchen</b><p>Keep good options at home. Don't stock junk you know you'll overeat: if it's not in the house, the easy choice is the right one.</p></div>
+    <div class="card"><b><span class="cmd">/enjoy</span>Eat food you like</b><p>A diet you hate won't last. Pick meals you look forward to.</p></div>
+  </div>
+</section>
+
+<section data-icon="bed" data-t="Take diet breaks" data-d="Plan breaks so the weight stays off" data-a="Planned for the long run">
+  <p class="kicker">Step 10 of 11</p>
+  <h2>Take breaks so the weight stays off <img src="assets/icons/bed.png" alt=""></h2>
+  <p class="lede">Dieting non-stop gets harder every week. Planned breaks let your body and your head reset, so you can keep going.</p>
+  <h3 class="flush">Why breaks help</h3>
+  <p>The longer you diet, the more your hunger rises and your energy drops. You also move less without noticing. A break at maintenance calories <strong>settles your hunger</strong>, brings your energy back and lets you <strong>practise eating at maintenance</strong>, which is the skill that keeps weight off.</p>
+  <h3>The plan</h3>
+  <div class="tl" aria-hidden="true"><div class="d" style="flex:7">Diet 6–8 weeks</div><div class="m" style="flex:1.8">Break 1–2</div><div class="d" style="flex:5">Diet again</div></div>
+  <div class="tlk"><span>Week 1</span><span>~Week 8</span><span>…</span></div>
+  <ol>
+    <li><strong>Diet for 6–8 weeks</strong> at your target from Step 1.</li>
+    <li><strong>Eat at maintenance for 1–2 weeks.</strong> This is not a cheat week: same habits, just more food.</li>
+    <li><strong>Recalculate.</strong> You're lighter now, so you burn less. Redo Step 1 with your new weight.</li>
+    <li><strong>Start the next phase</strong> from your new number.</li>
+  </ol>
+  <div class="tip"><b>Why most people gain it back</b>The diet ends and the habits end with it. The point of this guide is the <em>skills you keep</em>: building plates, reading labels, cooking food you love.</div>
+</section>
+
+<section data-icon="steve" data-t="Work with me" data-d="Want someone in your corner?" data-a="You made it">
+  <p class="kicker">Step 11 of 11</p>
+  <h2>Want a co-op partner? <img src="assets/icons/steve.png" alt=""></h2>
+  <div class="coop">
+    <div id="avatar" aria-label="Anand's Minecraft avatar waving"></div>
+    <div>
+      <p class="lede" style="margin-bottom:6px">You now have the whole plan, and plenty of people do it on their own.</p>
+      <p>If you'd like someone to plan it with you, follow your progress every week and keep you accountable, let's talk.</p>
+    </div>
+  </div>
+  <a class="cta" href="https://wa.me/919103267276?text=Hi!%20I%20read%20The%20Fat%20Loss%20Map%20and%20I%27d%20like%20to%20book%20a%20call." target="_blank" rel="noopener">Book a call on WhatsApp</a>
+  <a class="cta alt" href="https://instagram.com/anandtrainsyou" target="_blank" rel="noopener">DM "WORK" on Instagram</a>
+  <p class="small" style="text-align:center;margin-top:8px">@anandtrainsyou</p>
+  <p class="fine">General education, not medical advice. If you're pregnant, under 18, have a medical condition or a history of disordered eating, talk to a doctor before dieting.</p>
+</section>
+</template>
+
+<script src="web-kit/mc-backgrounds.js"></script>
+<script src="web-kit/mc-avatar.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const ICON=n=>`assets/icons/${n}.png`;
+const store={get(k,d){try{const v=localStorage.getItem("flm6-"+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem("flm6-"+k,JSON.stringify(v))}catch(e){}}};
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- meal ideas (rendered into Step 3) ---------- */
+const MEALS={Breakfast:[
+ ["Greek yogurt bowl","250 g 0% Greek yogurt, berries, 30 g oats, a few walnuts",380,30,"pcbf","protein",1],
+ ["Big omelette","2 eggs + egg whites, spinach, 1 slice sourdough, an apple",430,32,"pcbf","protein",1],
+ ["Overnight oats","50 g oats, milk, 1 scoop protein powder, berries",440,38,"pcb","balanced",1],
+ ["Cottage cheese and fruit","250 g low-fat cottage cheese, fruit, a drizzle of honey",290,30,"pcb","protein",1],
+ ["Eggs and smoked salmon","3 scrambled eggs, 50 g smoked salmon, sourdough",460,34,"pcf","protein",0],
+ ["Protein pancakes","40 g oats, 2 eggs + egg whites, a banana, blended",450,29,"pcb","carb",1]],
+Lunch:[
+ ["The classic","150 g chicken breast, sweet potato, a small salad, 1 egg",550,55,"pcbf","protein",0],
+ ["Chicken rice bowl","150 g chicken, rice, peppers, corn and salsa",520,52,"pcb","balanced",0],
+ ["Tuna and bean salad","1 tin tuna, white beans, potatoes, leaves, 1 tsp olive oil",420,39,"pcbf","fiber",0],
+ ["Egg and bean wrap","1 large wrap, 3 scrambled eggs, black beans, salsa",520,30,"pcbf","fiber",1],
+ ["Big salad","Chicken, chickpeas, a little feta, olive-oil dressing",510,52,"pbf","fiber",0],
+ ["Chicken and lentil soup","A huge bowl with carrots and celery",430,45,"pcb","fiber",0]],
+Dinner:[
+ ["Salmon and potatoes","150 g salmon, boiled potatoes, green beans",540,39,"pcbf","balanced",0],
+ ["Beef stir-fry","150 g lean beef, rice, broccoli, 1 tsp oil",480,40,"pcbf","balanced",0],
+ ["Lean chilli","150 g 5% beef mince, kidney beans, tomatoes, rice",570,44,"pcb","fiber",0],
+ ["Turkey meatball pasta","150 g turkey meatballs, 75 g pasta, tomato sauce, side salad",550,46,"pcb","carb",0],
+ ["Baked white fish","200 g cod, potatoes, peas",440,46,"pcb","protein",0],
+ ["Tofu stir-fry","200 g firm tofu, noodles, mixed veg, soy sauce",600,40,"pcbf","balanced",1]],
+Snacks:[
+ ["Yogurt and berries","200 g 0% Greek yogurt, a handful of berries",160,20,"pb","protein",1],
+ ["Shake and fruit","1 scoop protein powder in water, a banana",220,25,"pc","protein",1],
+ ["Big bowl of popcorn","30 g kernels, air-popped",115,4,"cb","fiber",1],
+ ["Boiled eggs and an apple","2 eggs, 1 apple",220,12,"pbf","balanced",1],
+ ["Rice cakes and cottage cheese","2 rice cakes, 100 g low-fat cottage cheese",145,14,"pc","protein",1]]};
+const COMP=[["p","cooked_chicken","Protein"],["c","baked_potato","Carbs"],["b","apple","Fiber"],["f","honey_bottle","Fat"]];
+const TAGS={protein:"Protein-heavy",carb:"Carb-heavy",fiber:"Fiber-rich",balanced:"Balanced"};
+(function(){const tpl=$("tpl").content.querySelector("#meals");let h="";
+  for(const [grp,list] of Object.entries(MEALS)){h+=`<div class="mealgroup">${grp}<span>${list.length} ideas</span></div>`;
+    list.forEach(([n,d,k,p,c,t,v])=>{h+=`<div class="meal"><div class="hd"><b>${n}</b><span class="num">~${k} kcal · ${p} g protein</span></div><p>${d}</p><div class="ft">`+
+      COMP.map(([key,ic,lab])=>`<span class="chip${c.includes(key)?"":" off"}"><img src="${ICON(ic)}" alt="">${lab}</span>`).join("")+(v?`<span class="veg">V</span>`:"")+`<span class="tag ${t}">${TAGS[t]}</span></div></div>`})}
+  tpl.innerHTML=h})();
+
+/* ---------- steps -> pages ---------- */
+const hold=document.createElement("div");hold.hidden=true;document.body.appendChild(hold);
+const chapters=[],pages=[];
+[...$("tpl").content.querySelectorAll("section")].forEach((s,ci)=>{const sec=document.importNode(s,true);
+  chapters.push({icon:s.dataset.icon,t:s.dataset.t,d:s.dataset.d,a:s.dataset.a});
+  let pg=document.createElement("div");
+  [...sec.children].forEach(el=>{if(el.matches("hr.pb")){pages.push({ch:ci,el:pg});pg=document.createElement("div")}else pg.appendChild(el)});
+  pages.push({ch:ci,el:pg})});
+pages.forEach(p=>hold.appendChild(p.el));
+const STEPS=chapters.length-1;let cur=0;
+$("toc").innerHTML=chapters.slice(1).map((c,i)=>`<a data-ch="${i+1}" href="#" role="link"><span class="n">${i+1}</span><span><b>${c.t}</b><span>${c.d}</span></span><img src="${ICON(c.icon)}" alt=""></a>`).join("");
+
+/* ---------- background: the films' sky, dawn → night across the guide ---------- */
+let bg=null;try{bg=MCBackground.mount("#bg",{scene:"sky",time:0,transition:1.2,pixelRatio:1,speed:.6})}catch(e){}
+
+/* ---------- render ---------- */
+const content=$("content"),book=$("book");
+function moreHint(){book.classList.toggle("has-more",content.scrollHeight-content.scrollTop-content.clientHeight>12)}
+content.addEventListener("scroll",moreHint,{passive:true});
+function render(back){[...content.children].forEach(n=>hold.appendChild(n));const p=pages[cur];content.appendChild(p.el);content.scrollTop=0;
+  const c=chapters[p.ch];$("prev").disabled=cur===0;$("next").disabled=cur===pages.length-1;$("navhint").textContent=cur===0?"Start the guide":cur===pages.length-1?"The end":(pages[cur+1].ch!==p.ch?"Next: "+chapters[pages[cur+1].ch].t:"Next page");
+  $("where").textContent=c.t;$("steplbl").textContent=p.ch===0?"Start":`Step ${p.ch} of ${STEPS}`;
+  $("lvl").textContent=p.ch;$("xpfill").style.width=(100*cur/Math.max(1,pages.length-1))+"%";
+  hotbar(p.ch);setStop(p.ch);store.set("page",cur);requestAnimationFrame(moreHint);
+  if(bg)bg.set({time:.95*cur/Math.max(1,pages.length-1),instant:!!back})}
+
+/* ---------- sounds ---------- */
+const click=new Audio("assets/click.mp3"),turns=[1,2,3].map(i=>new Audio(`assets/page_turn${i}.mp3`));
+let soundOn=store.get("sound",true);
+const setSound=()=>{$("sound").textContent=soundOn?"Sound on":"Sound off";$("sound").setAttribute("aria-pressed",soundOn)};setSound();
+$("sound").onclick=()=>{soundOn=!soundOn;store.set("sound",soundOn);setSound()};
+const play=a=>{if(!soundOn)return;try{a.currentTime=0;a.volume=.55;a.play().catch(()=>{})}catch(e){}};
+document.addEventListener("click",e=>{if(e.target.closest("button,a"))play(click)},true);
+
+/* ---------- page turns: a two-sided sheet hinged on the left binding; every tap moves one page ---------- */
+let seen=new Set(store.get("seen",[]));
+function face(){const f=document.createElement("div");f.className="face";const c=content.cloneNode(true);c.removeAttribute("id");c.querySelectorAll("[id]").forEach(e=>e.removeAttribute("id"));
+  const st=content.scrollTop;f.appendChild(c);requestAnimationFrame(()=>{c.scrollTop=st});
+  const sh=document.createElement("div");sh.className="shade";f.appendChild(sh);return f}
+function sheet(front,dir){const s=document.createElement("div");s.className="sheet "+dir;const r=document.createElement("div");r.className="rear";s.append(front,r);book.appendChild(s);setTimeout(()=>s.remove(),420)}
+/* one turn at a time: while a page is turning, the arrows (and swipes, keys, map, hotbar) are off, so a fast double-tap can't flip twice */
+const TURN=400,bnav=document.querySelector(".bnav");let busy=false;
+function go(k){if(busy||k<0||k>=pages.length||k===cur)return;busy=true;bnav.classList.add("busy");setTimeout(()=>{busy=false;bnav.classList.remove("busy")},reduce?60:TURN);
+  const oldCh=pages[cur].ch,fwd=k>cur;play(turns[Math.floor(Math.random()*3)]);
+  book.querySelectorAll(".sheet").forEach(s=>s.remove());
+  if(fwd){const f=face();cur=k;render(false);sheet(f,"fwd")}else{cur=k;render(true);sheet(face(),"back")}
+  const newCh=pages[k].ch;if(newCh>oldCh&&oldCh>0&&!seen.has(oldCh)){seen.add(oldCh);store.set("seen",[...seen]);toast(chapters[oldCh])}
+  if(k===pages.length-1&&!seen.has(newCh)){seen.add(newCh);store.set("seen",[...seen]);setTimeout(()=>toast(chapters[newCh]),700)}}
+function goChapter(ci){const k=pages.findIndex(p=>p.ch===ci);if(k>=0)go(k)}
+$("prev").addEventListener("click",()=>go(cur-1));$("next").addEventListener("click",()=>go(cur+1));
+document.addEventListener("keydown",e=>{if(e.target.matches("input"))return;if(e.key==="ArrowRight")go(cur+1);if(e.key==="ArrowLeft")go(cur-1);if(e.key==="Escape")closeMap()});
+let tx=null,ty=0;book.addEventListener("touchstart",e=>{tx=e.target.closest("input,button,a")?null:e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+book.addEventListener("touchend",e=>{if(tx==null)return;const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)go(cur+(dx<0?1:-1));tx=null});
+document.addEventListener("click",e=>{const a=e.target.closest("[data-ch]");if(a){e.preventDefault();goChapter(+a.dataset.ch)}});
+
+/* ---------- toast ---------- */
+let tt;function toast(c){$("toastimg").src=ICON(c.icon);$("toasttxt").textContent=c.a;$("toast").classList.add("show");clearTimeout(tt);tt=setTimeout(()=>$("toast").classList.remove("show"),2600)}
+
+/* ---------- hotbar ---------- */
+const slots=[...Array(9)].map((_,i)=>{const b=document.createElement("button");b.className="slot";b.style.left=`calc(100% * ${3+20*i} / 182)`;b.innerHTML='<img alt="">';$("hotbar").appendChild(b);return b});
+function hotbar(ch){const start=Math.max(0,Math.min(ch-4,chapters.length-9));
+  slots.forEach((b,i)=>{const ci=start+i,c=chapters[ci];b.querySelector("img").src=ICON(c.icon);b.title=c.t;b.setAttribute("aria-label",(ci?`Step ${ci}: `:"")+c.t);
+    b.classList.toggle("locked",ci>ch&&!seen.has(ci));b.onclick=()=>goChapter(ci)});
+  $("sel").style.left=`calc(100% * ${-1+20*(ch-start)} / 182)`}
+
+/* ---------- calculator ---------- */
+const S={units:"metric",sex:"m",pace:"500",goal:"1.9",...store.get("seg",{})};
+if(!["1.6","1.9","2.2"].includes(S.goal))S.goal="1.9";
+const GOALHINT={"1.6":"Lower end: fits you if you're new to lifting, have more body fat to lose, are in a gentle deficit, or find high-protein eating hard. You'll still protect your muscle.",
+  "1.9":"Middle: a solid default if you lift regularly and eat in a moderate deficit.",
+  "2.2":"Higher end: aim here if you're already lean, in a bigger deficit, training hard, over 40 or eating mostly plant protein. Going past 2.2 rarely adds anything."};
+const num=id=>parseFloat($(id).value)||0;
+function syncSeg(){document.querySelectorAll(".seg").forEach(sg=>sg.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",S[sg.dataset.k]===b.dataset.v)));
+  const imp=S.units==="imperial";document.querySelectorAll("[data-metric]").forEach(e=>e.hidden=imp);document.querySelectorAll("[data-imperial]").forEach(e=>e.hidden=!imp);
+  document.querySelectorAll("[data-u]").forEach(e=>e.textContent=e.dataset.u.split("|")[imp?1:0]);
+  document.querySelectorAll("#goalhint").forEach(e=>e.textContent=GOALHINT[S.goal])}
+document.addEventListener("click",e=>{const b=e.target.closest(".seg button");if(!b)return;e.preventDefault();const k=b.parentElement.dataset.k,v=b.dataset.v;if(S[k]===v)return;
+  if(k==="units"){const w=$("c-w"),gw=$("m-goal");const f=v==="imperial"?2.2046:1/2.2046;if(w.value)w.value=Math.round(+w.value*f);if(gw.value)gw.value=Math.round(+gw.value*f);
+    if(v==="imperial"){const cm=num("c-h")||176,inch=cm/2.54;$("c-ft").value=Math.floor(inch/12);$("c-in").value=Math.round(inch%12)}else{$("c-h").value=Math.round((num("c-ft")*12+num("c-in"))*2.54)}
+    ["c-w","m-goal","c-h","c-ft","c-in"].forEach(id=>store.set(id,$(id).value))}
+  S[k]=v;store.set("seg",S);syncSeg();calc()});
+function calc(){const imp=S.units==="imperial",kg=v=>imp?v/2.2046:v;
+  const w=kg(num("c-w")),h=imp?(num("c-ft")*12+num("c-in"))*2.54:num("c-h"),a=num("c-age"),m=S.sex==="m",def=+S.pace;
+  const maint=(10*w+6.25*h-5*a+(m?5:-161))*1.15+num("c-steps")*w*0.0005+num("c-lift")*200/7,target=maint-def,r=v=>Math.round(v/10)*10;
+  $("r-maint").textContent=r(maint)+" kcal";$("r-target").textContent=r(target)+" kcal";
+  $("r-rate").textContent=imp?`${(def*7/3500).toFixed(1)} lb`:`${(def*7/7700).toFixed(2).replace(/0$/,"")} kg`;
+  const g=kg(num("m-goal")),pw=g>30&&g<w?g:w,p=+S.goal*pw,fat=Math.min(70,Math.max(45,Math.round(pw*.7))),c=(target-p*4-fat*9)/4;
+  $("r-p").textContent=Math.round(p)+" g";$("r-pm").textContent=Math.round(p/4)+" g";
+  $("r-f").textContent=fat+" g";$("r-c").textContent=Math.max(0,Math.round(c))+" g";$("r-sf").textContent="<"+Math.round(target*.1/9)+" g"}
+document.addEventListener("input",e=>{if(e.target.matches("[data-save]")){store.set(e.target.id,e.target.value);calc()}});
+document.querySelectorAll("[data-save]").forEach(i=>{const v=store.get(i.id,null);if(v!=null)i.value=v});
+
+/* ---------- scale chart ---------- */
+(function(){const d=[80.9,81.4,80.6,80.8,81.6,81.1,80.5,80.4,80.9,80.1,80.3,81.0,80.2,79.9];
+  const W=300,H=118,L=26,T=6,B=20,lo=79.5,hi=82,x=i=>L+i*(W-L-8)/13,y=v=>T+(hi-v)/(hi-lo)*(H-T-B);
+  const a1=d.slice(0,7).reduce((s,v)=>s+v)/7,a2=d.slice(7).reduce((s,v)=>s+v)/7;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Two weeks of daily weigh-ins with weekly averages" font-family="Rubik, Arial" font-size="12">`;
+  [80,81,82].forEach(v=>s+=`<rect x="${L}" y="${y(v)}" width="${W-L-4}" height="1.5" fill="#0002"/><text x="${L-4}" y="${y(v)+4}" text-anchor="end" fill="#5c5245">${v}</text>`);
+  for(let i=0;i<13;i++)s+=`<line x1="${x(i)}" y1="${y(d[i])}" x2="${x(i+1)}" y2="${y(d[i+1])}" stroke="#a88a5a" stroke-width="2"/>`;
+  d.forEach((v,i)=>s+=`<rect x="${x(i)-3}" y="${y(v)-3}" width="6" height="6" fill="#5a3f1e"/>`);
+  s+=`<rect x="${x(0)}" y="${y(a1)-2}" width="${x(6)-x(0)}" height="4" fill="#2e7d1a"/><rect x="${x(7)}" y="${y(a2)-2}" width="${x(13)-x(7)}" height="4" fill="#2e7d1a"/>`;
+  s+=`<text x="${x(3)}" y="${H-4}" text-anchor="middle" fill="#1d1812" font-weight="500">Week 1 avg ${a1.toFixed(1)} kg</text><text x="${x(10)}" y="${H-4}" text-anchor="middle" fill="#1d1812" font-weight="500">Week 2 avg ${a2.toFixed(1)} kg</text></svg>`;
+  $("chart").innerHTML=s+`<p class="small" style="margin-top:2px">Example: the daily weight (brown) bounced by over a kilo, but the weekly average (green) fell ${(a1-a2).toFixed(1)} kg. That's the number that matters.</p>`})();
+
+/* ---------- the map ---------- */
+const img=src=>{const i=new Image();i.src=src;return i};
+const TEX={bg:img("assets/map_bg.png"),player:img("assets/map_player.png"),x:img("assets/map_x.png")};
+const stopIcons=chapters.slice(1).map(c=>img(ICON(c.icon)));
+const P=[[16,96],[32,84],[22,66],[42,58],[60,70],[80,80],[94,62],[78,44],[56,38],[48,20],[92,16]];
+const terrain=document.createElement("canvas");terrain.width=terrain.height=112;
+(function(){const g=terrain.getContext("2d"),W=112,water=[[-6,-6,30],[0,30,12],[30,-4,10],[62,-8,14],[104,90,20],[18,110,16],[70,100,6],[50,52,4],[104,40,5]];
+  const isW=(x,y)=>water.some(([cx,cy,r])=>(x-cx)**2+(y-cy)**2<r*r+((x*7+y*13)%11)*3);
+  for(let y=0;y<W;y++)for(let x=0;x<W;x++){let c;
+    if(isW(x,y)){const deep=water.some(([cx,cy,r])=>(x-cx)**2+(y-cy)**2<(r-4)**2);c=deep?((x+y)%2?"#3c3cee":"#3535d0"):((x+y)%2?"#4848f8":"#4040e8")}
+    else{const coast=isW(x+1,y)||isW(x-1,y)||isW(x,y+1)||isW(x,y-1);c=coast?"#b88a4f":(y%2?"#d9a86a":"#e3b47a")}
+    g.fillStyle=c;g.fillRect(x,y,1,1)}})();
+const M=v=>16+v*256/112;
+function drawMap(g,pos,stop,reveal){g.imageSmoothingEnabled=false;g.clearRect(0,0,288,288);g.drawImage(TEX.bg,0,0,288,288);g.drawImage(terrain,16,16,256,256);
+  for(let i=0;i<P.length-1;i++){const [x0,y0]=P[i],[x1,y1]=P[i+1],n=Math.hypot(x1-x0,y1-y0);
+    for(let d=3;d<n-2;d+=4){const f=d/n,done=i<stop||(i===stop&&f<=reveal);g.fillStyle=done?"#6b1a10":"#6b1a1040";g.fillRect(Math.round(M(x0+(x1-x0)*f))-2,Math.round(M(y0+(y1-y0)*f))-2,4,4)}}
+  P.forEach(([x,y],i)=>{if(i===P.length-1){g.drawImage(TEX.x,M(x)-12,M(y)-12,24,24);return}g.globalAlpha=i<=stop?1:.5;g.drawImage(stopIcons[i],M(x)-12,M(y)-14,24,24);g.globalAlpha=1});
+  const nx=P[Math.min(stop+1,P.length-1)],ang=Math.atan2(nx[1]-pos[1],nx[0]-pos[0])+Math.PI/2;
+  g.save();g.translate(M(pos[0]),M(pos[1]));g.rotate(stop>=P.length-1?0:ang);g.drawImage(TEX.player,-10,-10,20,20);g.restore()}
+const work=document.createElement("canvas");work.width=work.height=288;const wg=work.getContext("2d"),mini=$("minimap").getContext("2d"),bigc=$("bigmap").getContext("2d");
+let stopNow=0,stopPrev=0,walkT0=0,walkRaf=0;
+const stopOf=ch=>Math.max(0,Math.min(ch,P.length)-1);
+function frame(t){const k=reduce?1:Math.min(1,(t-walkT0)/700),A=P[stopPrev],B=P[stopNow],pos=[A[0]+(B[0]-A[0])*k,A[1]+(B[1]-A[1])*k];
+  const fwd=stopNow>stopPrev;drawMap(wg,k<1?pos:B,fwd?stopPrev:stopNow,fwd?k:1);
+  mini.imageSmoothingEnabled=false;mini.clearRect(0,0,96,96);mini.drawImage(work,0,0,96,96);
+  if(!$("mapview").hidden){bigc.imageSmoothingEnabled=false;bigc.clearRect(0,0,288,288);bigc.drawImage(work,0,0)}
+  if(k<1)walkRaf=requestAnimationFrame(frame)}
+function setStop(ch){const s=stopOf(ch);if(s===stopNow&&walkT0)return;stopPrev=stopNow;stopNow=s;walkT0=performance.now();cancelAnimationFrame(walkRaf);walkRaf=requestAnimationFrame(frame)}
+function openMap(){$("mapview").hidden=false;const ch=pages[cur].ch;
+  $("maptxt").textContent=ch===0?"Your progress. Turn the page to start.":`Step ${ch} of ${STEPS}: ${chapters[ch].t}`;
+  stopPrev=Math.max(0,stopNow-1);walkT0=performance.now();cancelAnimationFrame(walkRaf);walkRaf=requestAnimationFrame(frame);$("closemap").focus()}
+function closeMap(){$("mapview").hidden=true}
+$("mini").onclick=openMap;$("closemap").onclick=closeMap;$("mapview").onclick=e=>{if(e.target.id==="mapview")closeMap()};
+
+/* ---------- boot ---------- */
+syncSeg();calc();
+try{MCAvatar.mount(pages[pages.length-1].el.querySelector("#avatar"),{action:"wave",align:"bottom",fit:.96,yaw:.45,lookAtCursor:false,pixelRatio:1.5})}catch(e){}
+document.fonts.ready.then(()=>{cur=Math.min(store.get("page",0),pages.length-1);render(true);
+  Promise.all([TEX.bg,TEX.player,TEX.x,...stopIcons].map(i=>i.decode().catch(()=>{}))).then(()=>{stopNow=stopOf(pages[cur].ch);stopPrev=stopNow;walkT0=1;frame(performance.now()+1e4)})});
+addEventListener("resize",()=>requestAnimationFrame(moreHint));
+</script>
