@@ -52,7 +52,7 @@ button{font-family:inherit}
 .more{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);font-family:var(--mc);font-size:14px;color:#fff;background:#2a1f14e6;border:2px solid #000;padding:3px 10px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s;z-index:2}
 .book.has-more .more{opacity:1;animation:bob 1.6s ease-in-out infinite}
 @keyframes bob{50%{transform:translate(-50%,3px)}}
-.bnav{display:flex;justify-content:flex-end;align-items:center;gap:var(--sp-3);margin-top:var(--sp-1);padding:var(--sp-1) var(--sp-2);background:#00000066;font-family:var(--mc)}
+.bnav{display:flex;justify-content:flex-end;align-items:center;gap:var(--sp-3);margin-top:var(--sp-1);padding:var(--sp-1) var(--sp-2) calc(var(--sp-1) + env(safe-area-inset-bottom,0px));background:#00000066;font-family:var(--mc)}
 .navhint{flex:1;font-size:13px;color:#ddd}
 .arrow{all:unset;position:relative;cursor:pointer;width:69px;height:39px;padding:0;background-size:100% 100%;image-rendering:pixelated;flex:none;transition:opacity .12s}
 .arrow::after{content:"";position:absolute;inset:-6px}
@@ -230,7 +230,7 @@ input::placeholder{color:#888}
     <div class="more" aria-hidden="true">Scroll for more v</div>
   </article></div>
   <div class="bnav"><span class="navhint shadow" id="navhint">Next page</span><button class="arrow back" id="prev" aria-label="Previous page"></button><button class="arrow fwd" id="next" aria-label="Next page"></button></div>
-  <footer class="hud">
+  <footer class="hud" hidden>
     <div class="xp"><i id="xpfill"></i><span class="lvl" id="lvl">0</span></div>
     <div class="hotbar" id="hotbar"><div class="sel" id="sel"></div></div>
   </footer>
