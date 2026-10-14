@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Coach Name | Training &amp; Workout Plans</title>
+  <meta name="description" content="Free workout plans, training splits and no-nonsense fitness advice.">
+  <meta property="og:title" content="Coach Name | Training &amp; Workout Plans">
+  <meta property="og:description" content="Free workout plans, training splits and no-nonsense fitness advice.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">COACH NAME<span>.</span></a>
+      <nav class="nav">
+        <a href="/" aria-current="page">Home</a>
+        <a href="/#splits">Splits</a>
+        <a href="/plans/">Plans</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="eyebrow">Train with a plan</div>
+        <h1>Stop guessing.<br>Start progressing.</h1>
+        <p>Straightforward training advice and free workout plans you can follow today. Pick a split that fits your week, download it, and get to work.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="/plans/">Browse the plans</a>
+          <a class="btn" href="#splits">Which split is right for me?</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="wrap">
+        <div class="eyebrow">The approach</div>
+        <h2>What actually matters</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Progressive overload</h3>
+            <p>Do a little more over time: more weight, more reps, or better form. This is the engine of every good program.</p>
+          </div>
+          <div class="card">
+            <h3>Consistency over intensity</h3>
+            <p>A decent plan you follow for six months beats a perfect plan you quit after three weeks.</p>
+          </div>
+          <div class="card">
+            <h3>Recovery is training</h3>
+            <p>Sleep, protein, and rest days are when you actually grow. Don't skip them.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="splits">
+      <div class="wrap">
+        <div class="eyebrow">Workout splits</div>
+        <h2>Pick a split that fits your week</h2>
+        <p class="muted" style="max-width:640px">A split is just how you divide your training across the week. The best one is the one you can stick to.</p>
+        <div class="grid">
+          <div class="card">
+            <div class="tags"><span class="tag">2-3 days</span><span class="tag level">Beginner</span></div>
+            <h3>Full Body</h3>
+            <p>Train everything each session. High frequency, great for learning the lifts and for busy schedules.</p>
+          </div>
+          <div class="card">
+            <div class="tags"><span class="tag">4 days</span><span class="tag level">Intermediate</span></div>
+            <h3>Upper / Lower</h3>
+            <p>Alternate upper and lower body days. Each muscle gets hit twice a week with plenty of recovery.</p>
+          </div>
+          <div class="card">
+            <div class="tags"><span class="tag">3-6 days</span><span class="tag level">Int. / Advanced</span></div>
+            <h3>Push / Pull / Legs</h3>
+            <p>Group muscles by movement. Run it once a week for 3 days, or twice for a high-volume 6-day split.</p>
+          </div>
+          <div class="card">
+            <div class="tags"><span class="tag">5 days</span><span class="tag level">Advanced</span></div>
+            <h3>Body Part ("Bro") Split</h3>
+            <p>One or two muscle groups per day. Lots of volume per session, but each muscle trained only once a week.</p>
+          </div>
+        </div>
+        <div class="actions"><a class="btn btn-primary" href="/plans/">See the full plans</a></div>
+      </div>
+    </section>
+
+    <section id="featured">
+      <div class="wrap">
+        <div class="eyebrow">Free plans</div>
+        <h2>Latest plans</h2>
+        <div class="grid" id="featured-plans"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>&copy; <span id="year"></span> Coach Name</span>
+      <a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </footer>
+
+  <script src="/assets/app.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    loadPlans().then(plans => renderPlanCards(document.getElementById('featured-plans'), plans.slice(0, 3)));
+  </script>
+</body>
+</html>

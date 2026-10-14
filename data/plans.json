@@ -1,0 +1,167 @@
+[
+  {
+    "id": "full-body-3",
+    "title": "Full Body Foundations",
+    "level": "Beginner",
+    "daysPerWeek": 3,
+    "duration": "8 weeks",
+    "goal": "Strength + muscle",
+    "summary": "Three full-body sessions a week built around the big compound lifts. The best place to start if you're new to lifting or coming back after a break.",
+    "notes": [
+      "Train on non-consecutive days (e.g. Mon / Wed / Fri).",
+      "Add a little weight each week when you hit the top of the rep range with good form.",
+      "Leave 1-2 reps in the tank on every set. No grinding to failure yet."
+    ],
+    "days": [
+      {
+        "name": "Day A",
+        "focus": "Squat focus",
+        "exercises": [
+          { "name": "Back Squat", "sets": 3, "reps": "6-8", "rest": "2-3 min" },
+          { "name": "Bench Press", "sets": 3, "reps": "6-8", "rest": "2-3 min" },
+          { "name": "Seated Cable Row", "sets": 3, "reps": "8-12", "rest": "90 sec" },
+          { "name": "Romanian Deadlift", "sets": 2, "reps": "8-10", "rest": "2 min" },
+          { "name": "Plank", "sets": 3, "reps": "30-45 sec", "rest": "60 sec" }
+        ]
+      },
+      {
+        "name": "Day B",
+        "focus": "Deadlift focus",
+        "exercises": [
+          { "name": "Deadlift", "sets": 3, "reps": "5", "rest": "3 min" },
+          { "name": "Overhead Press", "sets": 3, "reps": "6-8", "rest": "2 min" },
+          { "name": "Lat Pulldown", "sets": 3, "reps": "8-12", "rest": "90 sec" },
+          { "name": "Walking Lunge", "sets": 2, "reps": "10 / leg", "rest": "90 sec" },
+          { "name": "Dumbbell Curl", "sets": 2, "reps": "10-12", "rest": "60 sec" }
+        ]
+      },
+      {
+        "name": "Day C",
+        "focus": "Volume day",
+        "exercises": [
+          { "name": "Goblet Squat", "sets": 3, "reps": "10-12", "rest": "90 sec" },
+          { "name": "Incline Dumbbell Press", "sets": 3, "reps": "8-12", "rest": "90 sec" },
+          { "name": "One-Arm Dumbbell Row", "sets": 3, "reps": "10 / side", "rest": "90 sec" },
+          { "name": "Hip Thrust", "sets": 3, "reps": "8-12", "rest": "90 sec" },
+          { "name": "Triceps Pushdown", "sets": 2, "reps": "10-15", "rest": "60 sec" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "upper-lower-4",
+    "title": "Upper / Lower Split",
+    "level": "Intermediate",
+    "daysPerWeek": 4,
+    "duration": "10 weeks",
+    "goal": "Hypertrophy",
+    "summary": "Four days a week, each muscle hit twice. A heavier day and a higher-rep day for both upper and lower body.",
+    "notes": [
+      "Suggested schedule: Mon Upper 1, Tue Lower 1, Thu Upper 2, Fri Lower 2.",
+      "Heavy days: stop 1-2 reps short of failure. Volume days: take the last set close to failure.",
+      "Deload every 5th week by cutting sets in half."
+    ],
+    "days": [
+      {
+        "name": "Upper 1",
+        "focus": "Strength",
+        "exercises": [
+          { "name": "Bench Press", "sets": 4, "reps": "5-6", "rest": "3 min" },
+          { "name": "Weighted Pull-Up", "sets": 4, "reps": "5-6", "rest": "3 min" },
+          { "name": "Seated Dumbbell Press", "sets": 3, "reps": "8-10", "rest": "2 min" },
+          { "name": "Chest-Supported Row", "sets": 3, "reps": "8-10", "rest": "2 min" },
+          { "name": "EZ-Bar Curl", "sets": 2, "reps": "8-10", "rest": "90 sec" },
+          { "name": "Skull Crusher", "sets": 2, "reps": "8-10", "rest": "90 sec" }
+        ]
+      },
+      {
+        "name": "Lower 1",
+        "focus": "Strength",
+        "exercises": [
+          { "name": "Back Squat", "sets": 4, "reps": "5-6", "rest": "3 min" },
+          { "name": "Romanian Deadlift", "sets": 3, "reps": "6-8", "rest": "2-3 min" },
+          { "name": "Leg Press", "sets": 3, "reps": "10-12", "rest": "2 min" },
+          { "name": "Lying Leg Curl", "sets": 3, "reps": "10-12", "rest": "90 sec" },
+          { "name": "Standing Calf Raise", "sets": 4, "reps": "8-12", "rest": "60 sec" }
+        ]
+      },
+      {
+        "name": "Upper 2",
+        "focus": "Volume",
+        "exercises": [
+          { "name": "Incline Dumbbell Press", "sets": 3, "reps": "10-12", "rest": "2 min" },
+          { "name": "Lat Pulldown", "sets": 3, "reps": "10-12", "rest": "90 sec" },
+          { "name": "Cable Fly", "sets": 3, "reps": "12-15", "rest": "60 sec" },
+          { "name": "Cable Row", "sets": 3, "reps": "10-12", "rest": "90 sec" },
+          { "name": "Lateral Raise", "sets": 4, "reps": "12-20", "rest": "60 sec" },
+          { "name": "Hammer Curl", "sets": 2, "reps": "12-15", "rest": "60 sec" },
+          { "name": "Overhead Triceps Extension", "sets": 2, "reps": "12-15", "rest": "60 sec" }
+        ]
+      },
+      {
+        "name": "Lower 2",
+        "focus": "Volume",
+        "exercises": [
+          { "name": "Trap Bar Deadlift", "sets": 3, "reps": "6-8", "rest": "3 min" },
+          { "name": "Bulgarian Split Squat", "sets": 3, "reps": "10 / leg", "rest": "2 min" },
+          { "name": "Leg Extension", "sets": 3, "reps": "12-15", "rest": "60 sec" },
+          { "name": "Seated Leg Curl", "sets": 3, "reps": "12-15", "rest": "60 sec" },
+          { "name": "Seated Calf Raise", "sets": 3, "reps": "15-20", "rest": "60 sec" },
+          { "name": "Hanging Leg Raise", "sets": 3, "reps": "10-15", "rest": "60 sec" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "push-pull-legs",
+    "title": "Push / Pull / Legs",
+    "level": "Advanced",
+    "daysPerWeek": 6,
+    "duration": "12 weeks",
+    "goal": "Hypertrophy",
+    "summary": "The classic six-day bodybuilding split. Run the push, pull and legs rotation twice a week for high volume on every muscle group.",
+    "notes": [
+      "Schedule: Push, Pull, Legs, Push, Pull, Legs, Rest.",
+      "Only run this if you can recover from 6 days a week: sleep and food matter here.",
+      "Rotate the first exercise of each day between heavy (5-8) and moderate (8-12) reps week to week."
+    ],
+    "days": [
+      {
+        "name": "Push",
+        "focus": "Chest, shoulders, triceps",
+        "exercises": [
+          { "name": "Bench Press", "sets": 4, "reps": "6-8", "rest": "2-3 min" },
+          { "name": "Overhead Press", "sets": 3, "reps": "8-10", "rest": "2 min" },
+          { "name": "Incline Dumbbell Press", "sets": 3, "reps": "10-12", "rest": "90 sec" },
+          { "name": "Lateral Raise", "sets": 4, "reps": "12-20", "rest": "60 sec" },
+          { "name": "Triceps Pushdown", "sets": 3, "reps": "10-15", "rest": "60 sec" },
+          { "name": "Overhead Triceps Extension", "sets": 2, "reps": "12-15", "rest": "60 sec" }
+        ]
+      },
+      {
+        "name": "Pull",
+        "focus": "Back, rear delts, biceps",
+        "exercises": [
+          { "name": "Deadlift or Rack Pull", "sets": 3, "reps": "5", "rest": "3 min" },
+          { "name": "Pull-Up", "sets": 4, "reps": "6-10", "rest": "2 min" },
+          { "name": "Barbell Row", "sets": 3, "reps": "8-10", "rest": "2 min" },
+          { "name": "Face Pull", "sets": 3, "reps": "15-20", "rest": "60 sec" },
+          { "name": "Incline Dumbbell Curl", "sets": 3, "reps": "10-12", "rest": "60 sec" },
+          { "name": "Hammer Curl", "sets": 2, "reps": "12-15", "rest": "60 sec" }
+        ]
+      },
+      {
+        "name": "Legs",
+        "focus": "Quads, hamstrings, glutes, calves",
+        "exercises": [
+          { "name": "Back Squat", "sets": 4, "reps": "6-8", "rest": "3 min" },
+          { "name": "Romanian Deadlift", "sets": 3, "reps": "8-10", "rest": "2 min" },
+          { "name": "Leg Press", "sets": 3, "reps": "10-15", "rest": "2 min" },
+          { "name": "Lying Leg Curl", "sets": 3, "reps": "10-12", "rest": "90 sec" },
+          { "name": "Leg Extension", "sets": 2, "reps": "12-15", "rest": "60 sec" },
+          { "name": "Standing Calf Raise", "sets": 4, "reps": "10-15", "rest": "60 sec" }
+        ]
+      }
+    ]
+  }
+]
