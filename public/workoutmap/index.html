@@ -54,7 +54,8 @@ header h1{font-family:var(--mc);font-weight:400;font-size:52px;line-height:56px;
 .label{font-family:var(--mc);font-size:16px;line-height:1.3;color:var(--yellow);text-shadow:2px 2px 0 #3f3f15;margin:0}
 .h{font:800 var(--fs-h2)/1.15 var(--read);letter-spacing:-.01em;text-wrap:balance;margin:var(--sp-1) 0 var(--sp-2)}
 .lie{font-family:var(--mc);font-size:16px;line-height:1.3;color:var(--muted);margin:0}
-.lie s{text-decoration-color:var(--bad);text-decoration-thickness:2px}
+.lie s{text-decoration:none;position:relative;display:inline-block}
+.lie s::after{content:"";position:absolute;left:-2px;right:-2px;top:50%;height:2px;margin-top:-1px;background:var(--bad)}
 .desc,.meta{font-size:var(--fs-sec);color:var(--muted);line-height:1.45;margin:0 0 var(--sp-3)}
 .cap{font:700 var(--fs-fine)/1.2 var(--read);letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:var(--sp-3) 0 var(--sp-2)}
 b,strong{font-weight:700}
@@ -181,8 +182,7 @@ footer .mc{font-family:var(--mc);color:var(--muted);font-size:16px}
 <section class="card feature">
   <p class="lie"><s>"You have to get weaker."</s></p>
   <h2 class="h">The biggest lie about being in a deficit</h2>
-  <p class="note"><b>You can still get stronger</b> in a calorie deficit.</p>
-  <p class="desc">Losing strength on a diet is common, but it isn't automatic. It usually comes down to three things:</p>
+  <p class="desc">You can still get stronger in a calorie deficit. Losing strength on a diet is common, but it isn't automatic. It usually comes down to three things:</p>
   <div class="cards">
     <div class="tile"><b>Inadequate programming</b><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABDElEQVR4nGNgoBAwElJgqMjyH8Y+f/8PhnoWQhoVeXkYhGXZGd5//sPAwPDxP7ohjIQ0ooMz196iuISRkMb7tz4zKKrx4jSEEVkjkwAzgyAvpq/QDQF55+7jj2BDmLBpBmlABiDNyGIgdcIsbGBXM4E1fP7C8O/DX5waYGIww0FY3CwQ4QIQSO1czvD28U8GGED3N0xjaEk/Q/GktQx2dnZgcUYxAdb/NnLcDC0rjjE8fPiQYXZ5JFbvgDTKycmB2Y8ePWKY0ZEN9gYjSACbIZ++/8Kr8dLr3xAXMEABuiEgxfg0vvrwGxKNDEgAmyGrewrBcugaYQAjJcIMgXkBl0acBsAMgbFxaaQaAAD5UacVEpj6HgAAAABJRU5ErkJggg==" alt=""></div>
     <div class="tile"><b>Improper nutrition</b><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABGElEQVR4nGNgoAco1WD6j0uOiZDmOnO+//f/sOOUZyFkwPePXxjW3PnHiEueEZvgHAFxsJNvSrxmANmuyPITLN59A9MgJnSNW4Tl/ie3tTFIMLODNXu84WPIeK/MYP9aBhwW6OHBiKwZpMmbk5eBwcmOgcHCBKHqxBkGhn2HGLZ+/8xwUPQJimtYsHps3yEIRgL3fv+CGP5aBm4IhhdgCtFpGBsENFnYGe4/5ME04KbEazB9/c9PuAaQk0F8mDg2wIJNEFkxyEZkPrpBjMgcUAiDQhubRhh/wbcPDGu+f2LE6YIXf3+CoxCmGaQRZjNIDh1gJIwQTr7/HuycYENgGmDsHT+/o9iO1QCYIYryX+B8WKija6YKAAAgQ4tPHyfppwAAAABJRU5ErkJggg==" alt=""></div>
