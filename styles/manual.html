@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ATcoaching · Training Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: printed programming sheet. Left-aligned 12-col grid, condensed headings, one solid blue band as the bold move. */
+:root {
+  --paper: #f4f6f9;
+  --card: #ffffff;
+  --ink: #0c1424;
+  --ink-2: #4a5568;
+  --rule: #d6dce6;
+  --blue: #1f4bd8;
+  --blue-deep: #1636a3;
+  --blue-soft: #e4eafb;
+  --on-blue: #ffffff;
+  --f-head: "Archivo", "Arial Narrow", sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, sans-serif;
+  --f-data: "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font: 400 17px/1.6 var(--f-body); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 40px); }
+h1, h2, h3 { font-family: var(--f-head); font-stretch: 70%; font-weight: 800; text-transform: uppercase; line-height: .92; letter-spacing: -.01em; margin: 0; text-wrap: balance; }
+.data { font-family: var(--f-data); font-size: .8rem; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.label { font: 600 .75rem/1 var(--f-body); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+
+.btn { display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 22px; font: 600 .95rem/1 var(--f-body); border-radius: 4px; transition: background .2s, transform .2s; }
+.btn:active { transform: translateY(1px); }
+.btn-blue { background: var(--blue); color: var(--on-blue); }
+.btn-blue:hover { background: var(--blue-deep); }
+.btn-line { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.btn-line:hover { background: var(--ink); color: var(--paper); }
+
+/* Header */
+header { border-bottom: 1px solid var(--rule); background: var(--paper); }
+header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 76px; }
+header img { height: 30px; width: auto; }
+nav { display: flex; gap: 28px; font-weight: 500; }
+nav a:hover { color: var(--blue); }
+header .btn { height: 42px; }
+
+/* Hero */
+.hero { padding-block: clamp(48px, 8vw, 96px); }
+.hero .wrap { display: grid; grid-template-columns: 1.25fr .75fr; gap: clamp(32px, 5vw, 72px); align-items: end; }
+.hero h1 { font-size: clamp(2.8rem, 6.4vw, 5.6rem); }
+.hero h1 em { font-style: normal; color: var(--blue); }
+.hero p { font-size: 1.2rem; color: var(--ink-2); max-width: 46ch; margin: 28px 0 32px; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.myth-card { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.myth-card .row { padding: 20px 22px; display: grid; gap: 8px; }
+.myth-card .row + .row { border-top: 1px dashed var(--rule); }
+.myth-card .myth p { margin: 0; font-size: 1.15rem; color: var(--ink-2); text-decoration: line-through; text-decoration-color: var(--blue); text-decoration-thickness: 2px; }
+.myth-card .fact { background: var(--blue-soft); }
+.myth-card .fact p { margin: 0; font-weight: 500; }
+.myth-card .src { padding: 12px 22px; border-top: 1px solid var(--rule); color: var(--ink-2); }
+
+/* Blue band: the three sections */
+.band { background: var(--blue); color: var(--on-blue); }
+.band .wrap { display: grid; grid-template-columns: repeat(3, 1fr); }
+.band a { padding: 36px 28px 40px; display: grid; gap: 10px; border-left: 1px solid rgba(255,255,255,.22); transition: background .2s; }
+.band a:first-child { border-left: 0; padding-left: 0; }
+.band a:hover { background: var(--blue-deep); }
+.band h2 { font-size: clamp(2rem, 3.6vw, 3rem); }
+.band p { margin: 0; opacity: .85; max-width: 32ch; }
+.band .data { opacity: .75; }
+
+/* Sections */
+section { padding-block: clamp(64px, 9vw, 112px); }
+.sec-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; margin-bottom: 36px; padding-bottom: 18px; border-bottom: 2px solid var(--ink); }
+.sec-head h2 { font-size: clamp(2.2rem, 5vw, 3.8rem); }
+.sec-head a { font-weight: 600; color: var(--blue); }
+
+.articles { display: grid; }
+.article { display: grid; grid-template-columns: 140px 1fr 120px; gap: 24px; padding: 26px 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
+.article h3 { font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-stretch: 80%; text-transform: none; font-weight: 700; letter-spacing: -.01em; transition: color .2s; }
+.article:hover h3 { color: var(--blue); }
+.article p { margin: 8px 0 0; color: var(--ink-2); max-width: 62ch; }
+.article .tag { justify-self: end; color: var(--blue); }
+
+/* Guides: spec sheet */
+.guides { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+.spec { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; overflow-x: auto; }
+.spec table { width: 100%; border-collapse: collapse; min-width: 440px; }
+.spec th, .spec td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+.spec th { font: 600 .72rem/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); background: var(--paper); }
+.spec td:first-child { font-weight: 600; white-space: normal; }
+.spec tr:last-child td { border-bottom: 0; }
+.spec tbody tr:hover { background: var(--blue-soft); }
+.spec .free { color: var(--blue); font-weight: 600; }
+.sheet { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; }
+.sheet .top { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 18px 20px; border-bottom: 2px solid var(--ink); }
+.sheet h3 { font-size: 1.6rem; }
+.sheet ol { list-style: none; margin: 0; padding: 0; }
+.sheet li { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding: 13px 20px; border-bottom: 1px solid var(--rule); }
+.sheet li:last-child { border-bottom: 0; }
+.sheet .rx { color: var(--blue); }
+.sheet .foot { padding: 14px 20px; background: var(--paper); color: var(--ink-2); font-size: .9rem; border-top: 1px solid var(--rule); }
+
+/* Store */
+.products { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.product { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 26px; display: flex; flex-direction: column; gap: 12px; transition: border-color .2s, transform .2s; }
+.product:hover { border-color: var(--blue); transform: translateY(-2px); }
+.product h3 { font-size: 1.7rem; }
+.product p { margin: 0; color: var(--ink-2); }
+.product .price { margin-top: auto; padding-top: 18px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: baseline; }
+.product .price b { font: 800 2rem/1 var(--f-head); font-stretch: 75%; }
+.product .soon { color: var(--blue); }
+
+/* Coaching */
+.coach .wrap { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(28px, 5vw, 64px); align-items: center; }
+.photo { aspect-ratio: 4 / 5; max-width: 100%; border-radius: 6px; background: repeating-linear-gradient(135deg, var(--blue-soft) 0 14px, var(--paper) 14px 28px); border: 1px solid var(--rule); display: grid; place-items: center; color: var(--ink-2); }
+.coach h2 { font-size: clamp(2.4rem, 5.6vw, 4.4rem); margin-bottom: 20px; }
+.coach ul { padding: 0; margin: 0 0 30px; list-style: none; display: grid; gap: 10px; }
+.coach li { padding-left: 26px; position: relative; }
+.coach li::before { content: ""; position: absolute; left: 0; top: .55em; width: 12px; height: 12px; background: var(--blue); }
+.coach .dm { margin-top: 16px; color: var(--ink-2); }
+
+footer { border-top: 2px solid var(--ink); padding-block: 48px; }
+footer .wrap { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; }
+footer img { width: 240px; }
+footer nav { color: var(--ink-2); flex-wrap: wrap; }
+
+@media (max-width: 900px) {
+  nav.main { display: none; }
+  .hero .wrap, .guides, .coach .wrap { grid-template-columns: 1fr; }
+  .band .wrap { grid-template-columns: 1fr; }
+  .band a, .band a:first-child { border-left: 0; border-top: 1px solid rgba(255,255,255,.22); padding: 28px 0; }
+  .band a:first-child { border-top: 0; }
+  .products { grid-template-columns: 1fr; }
+  .article { grid-template-columns: 1fr; gap: 6px; }
+  .article .tag { justify-self: start; }
+  .photo { aspect-ratio: 16 / 10; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a href="#"><img src="img/logo-ink.png" alt="ATcoaching"></a>
+    <nav class="main"><a href="#">Articles</a><a href="#">Free guides</a><a href="#">Store</a></nav>
+    <a class="btn btn-blue" href="https://tally.so/r/rjgY2L" target="_blank" rel="noopener">Apply for coaching</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <span class="label">Anand · Online fitness coach</span>
+        <h1 style="margin-top:18px">Fitness advice, checked against the <em>evidence.</em></h1>
+        <p>I help people lose fat and get stronger. Read the articles, follow a free plan, or get a full program.</p>
+        <div class="actions">
+          <a class="btn btn-blue" href="#">Get a free plan</a>
+          <a class="btn btn-line" href="#">Read the articles</a>
+        </div>
+      </div>
+      <aside class="myth-card" aria-label="Myth and evidence example">
+        <div class="row myth"><span class="label">Myth</span><p>Crunches burn belly fat.</p></div>
+        <div class="row fact"><span class="label" style="color:var(--blue)">Evidence</span><p>You can't choose where you lose fat. A calorie deficit takes it from your whole body, and the belly is often last.</p></div>
+        <div class="src data">From: "Crunches won't burn belly fat"</div>
+      </aside>
+    </div>
+  </section>
+
+  <div class="band">
+    <div class="wrap">
+      <a href="#"><span class="data">3 articles</span><h2>Articles</h2><p>Myths taken apart, and opinions on training and nutrition.</p></a>
+      <a href="#"><span class="data">4 free guides</span><h2>Free guides</h2><p>Workout plans and how-tos. Download the PDF and train.</p></a>
+      <a href="#"><span class="data">3 programs</span><h2>Store</h2><p>Full programs and guides, priced from ₹299.</p></a>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><h2>Latest articles</h2><a href="#">All articles →</a></div>
+      <div class="articles">
+        <a class="article" href="#"><span class="data">10 Oct 2026 · 4 min</span><div><h3>You can't out-train your diet (but you can out-plan it)</h3><p>An hour on the treadmill burns about as much as one big plate of biryani. Why the kitchen decides your fat loss.</p></div><span class="data tag">Nutrition</span></a>
+        <a class="article" href="#"><span class="data">03 Oct 2026 · 3 min</span><div><h3>Crunches won't burn belly fat. Here's what will.</h3><p>Spot reduction is the myth that refuses to die. What the research says about where you lose fat first.</p></div><span class="data tag">Myths</span></a>
+        <a class="article" href="#"><span class="data">26 Sep 2026 · 3 min</span><div><h3>Soreness isn't a scoreboard</h3><p>If you judge a workout by how much it hurts the next day, you're tracking the wrong thing.</p></div><span class="data tag">Training</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head"><h2>Free guides</h2><a href="#">All guides →</a></div>
+      <div class="guides">
+        <div class="spec">
+          <table>
+            <thead><tr><th>Guide</th><th>Level</th><th>Schedule</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Fat Loss 101</td><td>Start here</td><td class="data">7 min read</td><td class="free">Free</td></tr>
+              <tr><td>Full Body Foundations</td><td>Beginner</td><td class="data">3×/wk · 8 wks</td><td class="free">Free</td></tr>
+              <tr><td>Upper / Lower Split</td><td>Intermediate</td><td class="data">4×/wk · 10 wks</td><td class="free">Free</td></tr>
+              <tr><td>Push / Pull / Legs</td><td>Advanced</td><td class="data">6×/wk · 12 wks</td><td class="free">Free</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="sheet">
+          <div class="top"><h3>Full Body · Day A</h3><span class="data" style="color:var(--ink-2)">Week 1 of 8</span></div>
+          <ol>
+            <li><span>Back Squat</span><span class="data rx">3 × 6–8 · 2–3 min</span></li>
+            <li><span>Bench Press</span><span class="data rx">3 × 6–8 · 2–3 min</span></li>
+            <li><span>Seated Cable Row</span><span class="data rx">3 × 8–12 · 90 s</span></li>
+            <li><span>Romanian Deadlift</span><span class="data rx">2 × 8–10 · 2 min</span></li>
+            <li><span>Plank</span><span class="data rx">3 × 30–45 s · 60 s</span></li>
+          </ol>
+          <div class="foot">Leave 1–2 reps in the tank on every set. Add weight when you hit the top of the range.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head"><h2>Store</h2><a href="#">Visit the store →</a></div>
+      <div class="products">
+        <a class="product" href="#"><span class="label">Program</span><h3>12-Week Fat Loss Program</h3><p>Training, nutrition and weekly check-ins. Gym-based, 3–4 days a week.</p><div class="price"><b>₹999</b><span class="soon">Coming soon</span></div></a>
+        <a class="product" href="#"><span class="label">Program</span><h3>Home Workout Plan</h3><p>Eight weeks with dumbbells and bodyweight only.</p><div class="price"><b>₹399</b><span class="soon">Coming soon</span></div></a>
+        <a class="product" href="#"><span class="label">Guide</span><h3>High-Protein Indian Meal Guide</h3><p>Everyday Indian meals with more protein, veg and non-veg.</p><div class="price"><b>₹299</b><span class="soon">Coming soon</span></div></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="coach" style="padding-top:0">
+    <div class="wrap">
+      <div class="photo">Photo of Anand</div>
+      <div>
+        <span class="label">1:1 online coaching</span>
+        <h2 style="margin-top:14px">Want it built around you?</h2>
+        <ul>
+          <li>Training plan written for your schedule and equipment</li>
+          <li>Calorie and protein targets you can actually hit</li>
+          <li>Weekly check-ins and adjustments</li>
+        </ul>
+        <a class="btn btn-blue" href="https://tally.so/r/rjgY2L" target="_blank" rel="noopener">Apply for coaching</a>
+        <p class="dm">Or DM "WORK" to @anandtrainsyou on Instagram.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <img src="img/logo-ink.png" alt="ATcoaching">
+    <nav><a href="#">Articles</a><a href="#">Free guides</a><a href="#">Store</a><a href="https://instagram.com/anandtrainsyou" target="_blank" rel="noopener">Instagram</a></nav>
+  </div>
+</footer>
+</body>
+</html>

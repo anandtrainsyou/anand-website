@@ -1,0 +1,153 @@
+<title>ATcoaching Style Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: a quiet review sheet. One column, each option gets a large live preview; the page itself stays neutral so the options do the talking. */
+:root {
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --fg: #111827;
+  --fg-2: #5b6474;
+  --rule: #dde2ea;
+  --accent: #2350ff;
+  --f-ui: "Instrument Sans", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #0d1117; --surface: #161b24; --fg: #eef1f6; --fg-2: #98a2b3; --rule: #263042; --accent: #7d9bff; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #0d1117; --surface: #161b24; --fg: #eef1f6; --fg-2: #98a2b3; --rule: #263042; --accent: #7d9bff; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 400 16px/1.55 var(--f-ui); padding-inline: clamp(16px, 4vw, 48px); padding-block: 40px 80px; }
+.page { max-width: 1240px; margin: 0 auto; display: grid; gap: 56px; }
+h1, h2 { margin: 0; letter-spacing: -.02em; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 4.6vw, 3.2rem); font-weight: 700; line-height: 1.05; }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; }
+p { margin: 0; }
+.intro { display: grid; gap: 14px; max-width: 64ch; }
+.intro p { color: var(--fg-2); font-size: 1.08rem; }
+.intro img { width: 150px; background: #0e1a3a; padding: 12px 14px; border-radius: 6px; }
+
+.toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.toolbar span { color: var(--fg-2); font-size: .9rem; }
+.seg { display: inline-flex; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 3px; }
+.seg button { font: 600 .9rem/1 var(--f-ui); color: var(--fg-2); background: none; border: 0; padding: 9px 16px; border-radius: 6px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.seg button:focus-visible, .open:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.option { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 32px; align-items: start; padding-top: 32px; border-top: 1px solid var(--rule); }
+.meta { display: grid; gap: 16px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); }
+.letter { font-weight: 700; font-size: .85rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.meta p { color: var(--fg-2); }
+.swatches { display: flex; gap: 6px; }
+.swatches i { width: 34px; height: 34px; border-radius: 6px; border: 1px solid var(--rule); }
+dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: .92rem; }
+dt { color: var(--fg-2); }
+dd { margin: 0; font-weight: 500; }
+.open { justify-self: start; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--accent); text-decoration: none; border-bottom: 2px solid currentColor; padding-bottom: 2px; }
+
+.frame { position: relative; width: 100%; max-width: 100%; overflow: hidden; border-radius: 10px; border: 1px solid var(--rule); background: var(--surface); }
+.frame iframe { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; background: #fff; }
+.phone .frame { width: 390px; margin-inline: auto; border-radius: 28px; border: 8px solid var(--fg); }
+
+.note { color: var(--fg-2); font-size: .92rem; max-width: 64ch; }
+
+@media (max-width: 900px) {
+  .option { grid-template-columns: minmax(0, 1fr); }
+  .meta { position: static; }
+}
+@media (max-width: 440px) { .phone .frame { width: 100%; } }
+</style>
+
+<div class="page">
+  <header class="intro">
+    <img src="img/logo-bone.png" alt="ATcoaching">
+    <h1>Three directions for the ATcoaching site</h1>
+    <p>Each option is the same homepage with the same content, styled three ways. All three use blue. Pick the one that feels most like you, and the rest of the site (articles, free guides, store) gets built in that style.</p>
+    <p>Text, prices and products are placeholders for now. The grey boxes are where your photos go.</p>
+  </header>
+
+  <div class="toolbar">
+    <span>Preview as</span>
+    <div class="seg" role="group" aria-label="Preview size">
+      <button id="view-desktop" data-view="desktop" aria-pressed="true">Desktop</button>
+      <button id="view-phone" data-view="phone" aria-pressed="false">Phone</button>
+    </div>
+  </div>
+
+  <article class="option">
+    <div class="meta">
+      <span class="letter">Option A</span>
+      <h2>Training Manual</h2>
+      <p>Light and clean, like a well-printed programming sheet. Reads as credible and research-led. The workout plans show up as real spec sheets.</p>
+      <div class="swatches"><i style="background:#f4f6f9"></i><i style="background:#0c1424"></i><i style="background:#1f4bd8"></i><i style="background:#e4eafb"></i></div>
+      <dl><dt>Headings</dt><dd>Archivo Condensed</dd><dt>Body</dt><dd>IBM Plex Sans</dd><dt>Feel</dt><dd>Clear, expert, calm</dd></dl>
+      <a class="open" href="manual.html" target="_blank" rel="noopener">Open full page ↗</a>
+    </div>
+    <div class="frame" data-src="manual.html"></div>
+  </article>
+
+  <article class="option">
+    <div class="meta">
+      <span class="letter">Option B</span>
+      <h2>Night Session</h2>
+      <p>Dark and athletic, built around the logo's slanted A. Closest to the first draft, now in blue and without the extras. Feels like a sports brand.</p>
+      <div class="swatches"><i style="background:#080c16"></i><i style="background:#eef1f6"></i><i style="background:#2f6bff"></i><i style="background:#8db1ff"></i></div>
+      <dl><dt>Headings</dt><dd>Chakra Petch Italic</dd><dt>Body</dt><dd>Barlow</dd><dt>Feel</dt><dd>Bold, intense, gym</dd></dl>
+      <a class="open" href="night.html" target="_blank" rel="noopener">Open full page ↗</a>
+    </div>
+    <div class="frame" data-src="night.html"></div>
+  </article>
+
+  <article class="option">
+    <div class="meta">
+      <span class="letter">Option C</span>
+      <h2>Comic Panel</h2>
+      <p>Pop-culture energy: ink outlines, blue halftone dots and speech bubbles for myth vs. evidence. The most personality, and it stands out from other coaches.</p>
+      <div class="swatches"><i style="background:#edf1f7"></i><i style="background:#0e1a3a"></i><i style="background:#2350ff"></i><i style="background:#c9d6ff"></i></div>
+      <dl><dt>Headings</dt><dd>Bricolage Grotesque</dd><dt>Body</dt><dd>Atkinson Hyperlegible</dd><dt>Feel</dt><dd>Fun, nerdy, approachable</dd></dl>
+      <a class="open" href="panel.html" target="_blank" rel="noopener">Open full page ↗</a>
+    </div>
+    <div class="frame" data-src="panel.html"></div>
+  </article>
+
+  <p class="note">Mixing is fine too, for example the layout of A with the colours of B. Just say which parts you like.</p>
+</div>
+
+<script>
+  const SIZES = { desktop: { w: 1440, h: 2000 }, phone: { w: 390, h: 780 } };
+  let view = 'desktop';
+  const frames = [...document.querySelectorAll('.frame')];
+
+  frames.forEach(f => {
+    const iframe = document.createElement('iframe');
+    iframe.src = f.dataset.src;
+    iframe.title = f.dataset.src.replace('.html', '') + ' preview';
+    iframe.loading = 'lazy';
+    f.appendChild(iframe);
+  });
+
+  function layout() {
+    const s = SIZES[view];
+    frames.forEach(f => {
+      const iframe = f.querySelector('iframe');
+      const scale = Math.min(1, f.clientWidth / s.w);
+      iframe.style.width = s.w + 'px';
+      iframe.style.height = s.h + 'px';
+      iframe.style.transform = `scale(${scale})`;
+      f.style.height = Math.round(s.h * scale) + 'px';
+    });
+  }
+
+  document.querySelector('.seg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    view = b.dataset.view;
+    document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    document.body.classList.toggle('phone', view === 'phone');
+    layout();
+  });
+
+  new ResizeObserver(layout).observe(document.querySelector('.page'));
+  layout();
+</script>

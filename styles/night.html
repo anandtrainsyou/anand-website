@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ATcoaching · Night Session</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Chakra+Petch:ital,wght@1,600;1,700&display=swap" rel="stylesheet">
+<style>
+/* Layout: dark athletic. The logo's 40° slant becomes the one structural motif (hero band, buttons, photo frame). Everything else stays quiet. */
+:root {
+  --bg: #080c16;
+  --bg-2: #0e1525;
+  --fg: #eef1f6;
+  --fg-2: #98a3b8;
+  --line: #1d2740;
+  --blue: #2f6bff;
+  --blue-2: #8db1ff;
+  --on-blue: #ffffff;
+  --f-head: "Chakra Petch", "Barlow", sans-serif;
+  --f-body: "Barlow", system-ui, sans-serif;
+  --slant: 28px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--fg); font: 400 17px/1.6 var(--f-body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 40px); }
+h1, h2, h3 { font-family: var(--f-head); font-style: italic; font-weight: 700; text-transform: uppercase; line-height: .92; letter-spacing: -.02em; margin: 0; text-wrap: balance; }
+.label { font: 600 .78rem/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--blue-2); }
+.muted { color: var(--fg-2); }
+
+.btn { display: inline-flex; align-items: center; height: 52px; padding: 0 30px; font: 600 .95rem/1 var(--f-body); letter-spacing: .04em; text-transform: uppercase;
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%); transition: background .2s, transform .2s; }
+.btn:active { transform: translateY(1px); }
+.btn-blue { background: var(--blue); color: var(--on-blue); }
+.btn-blue:hover { background: #4a7fff; }
+.btn-ghost { background: var(--bg-2); }
+.btn-ghost:hover { background: var(--line); }
+.btn-dark { background: var(--bg); color: var(--fg); }
+
+header { position: relative; z-index: 2; }
+header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 84px; }
+header img { height: 32px; width: auto; }
+nav { display: flex; gap: 30px; font-weight: 500; color: var(--fg-2); }
+nav a:hover { color: var(--fg); }
+header .btn { height: 44px; padding: 0 24px; }
+
+/* Hero */
+.hero { position: relative; padding-block: clamp(40px, 7vw, 96px) clamp(64px, 9vw, 120px); overflow: hidden; }
+.hero::before { /* the slanted band, same angle as the logo's A */
+  content: ""; position: absolute; top: -10%; bottom: -10%; right: -8%; width: 46%;
+  background: var(--blue); clip-path: polygon(38% 0, 100% 0, 100% 100%, 0 100%); }
+.hero .wrap { position: relative; display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; }
+.hero h1 { font-size: clamp(3.4rem, 9vw, 8rem); }
+.hero h1 span { color: var(--blue-2); }
+.hero p { font-size: 1.2rem; color: var(--fg-2); max-width: 40ch; margin: 28px 0 34px; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-art { position: relative; justify-self: end; width: min(440px, 100%); }
+.hero-art .photo { aspect-ratio: 4 / 5; max-width: 100%; background: linear-gradient(160deg, #182342, #0b1120); clip-path: polygon(22% 0, 100% 0, 78% 100%, 0 100%);
+  display: grid; place-items: center; color: var(--fg-2); font-size: .9rem; }
+.hero-art img { position: absolute; left: -18%; bottom: -6%; width: 62%; }
+
+/* Paths */
+section { padding-block: clamp(64px, 9vw, 112px); }
+.paths { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.path { position: relative; padding: 34px 30px 30px; background: var(--bg-2); min-height: 240px; display: flex; flex-direction: column; gap: 12px;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--slant)), calc(100% - var(--slant)) 100%, 0 100%); transition: background .25s; }
+.path::after { content: ""; position: absolute; left: 30px; top: 0; width: 56px; height: 4px; background: var(--blue); transition: width .3s; }
+.path:hover { background: #121b2f; }
+.path:hover::after { width: 120px; }
+.path h2 { font-size: 2.4rem; margin-top: auto; }
+.path p { margin: 0; color: var(--fg-2); }
+
+.sec-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; margin-bottom: 40px; }
+.sec-head h2 { font-size: clamp(2.4rem, 5.4vw, 4.4rem); }
+.sec-head a { color: var(--blue-2); font-weight: 600; }
+
+.article { display: grid; grid-template-columns: 1fr auto; gap: 24px; padding: 30px 0; border-top: 1px solid var(--line); align-items: center; }
+.article:last-child { border-bottom: 1px solid var(--line); }
+.article h3 { font-size: clamp(1.6rem, 3vw, 2.4rem); text-transform: none; font-style: italic; transition: color .2s; }
+.article:hover h3 { color: var(--blue-2); }
+.article p { margin: 10px 0 0; color: var(--fg-2); max-width: 64ch; }
+.article .meta { color: var(--fg-2); font-size: .9rem; white-space: nowrap; }
+
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.card { background: var(--bg-2); padding: 28px; display: flex; flex-direction: column; gap: 12px; border-top: 4px solid var(--blue); transition: transform .25s; }
+.card:hover { transform: translateY(-3px); }
+.card h3 { font-size: 1.8rem; }
+.card p { margin: 0; color: var(--fg-2); }
+.card .foot { margin-top: auto; padding-top: 18px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; color: var(--fg-2); font-size: .92rem; }
+.card .foot b { color: var(--blue-2); font-weight: 600; }
+.card .price { font: italic 700 2.2rem/1 var(--f-head); color: var(--fg); }
+
+.coach { background: var(--blue); color: var(--on-blue); padding-block: clamp(64px, 9vw, 104px); position: relative; overflow: hidden; }
+.coach .wrap { display: grid; grid-template-columns: 1.2fr .8fr; gap: 40px; align-items: end; position: relative; }
+.coach h2 { font-size: clamp(2.8rem, 7vw, 6rem); }
+.coach p { font-size: 1.15rem; max-width: 46ch; margin: 22px 0 0; opacity: .9; }
+.coach .side { display: grid; gap: 14px; justify-items: start; }
+.coach img { position: absolute; right: -4%; top: -30%; width: 44%; opacity: .12; }
+
+footer { padding-block: 56px; }
+footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+footer img { width: 220px; }
+
+@media (max-width: 900px) {
+  nav.main { display: none; }
+  .hero::before { width: 70%; top: 40%; opacity: .9; }
+  .hero .wrap, .coach .wrap { grid-template-columns: 1fr; }
+  .hero-art { justify-self: center; width: min(340px, 86%); }
+  .paths, .cards { grid-template-columns: 1fr; }
+  .article { grid-template-columns: 1fr; gap: 8px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a href="#"><img src="img/logo-bone.png" alt="ATcoaching"></a>
+    <nav class="main"><a href="#">Articles</a><a href="#">Free guides</a><a href="#">Store</a></nav>
+    <a class="btn btn-blue" href="https://tally.so/r/rjgY2L" target="_blank" rel="noopener">Coaching</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <span class="label">Anand · Online fitness coach</span>
+        <h1 style="margin-top:20px">Lose fat.<br><span>Get stronger.</span></h1>
+        <p>Evidence-based coaching that busts the myths. Free guides, straight answers and training plans that work.</p>
+        <div class="actions">
+          <a class="btn btn-blue" href="#">Get a free plan</a>
+          <a class="btn btn-ghost" href="#">Read the articles</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="photo">Photo of Anand</div>
+        <img src="img/mark-bone.png" alt="">
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap paths">
+      <a class="path" href="#"><span class="label">3 articles</span><h2>Articles</h2><p>Myths taken apart, and opinions on training and nutrition.</p></a>
+      <a class="path" href="#"><span class="label">4 free guides</span><h2>Free guides</h2><p>Workout plans and how-tos. Download the PDF and train.</p></a>
+      <a class="path" href="#"><span class="label">3 programs</span><h2>Store</h2><p>Full programs and guides, priced from ₹299.</p></a>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head"><h2>Latest articles</h2><a href="#">All articles →</a></div>
+      <a class="article" href="#"><div><span class="label">Nutrition</span><h3 style="margin-top:10px">You can't out-train your diet (but you can out-plan it)</h3><p>An hour on the treadmill burns about as much as one big plate of biryani.</p></div><span class="meta">10 Oct · 4 min</span></a>
+      <a class="article" href="#"><div><span class="label">Myths</span><h3 style="margin-top:10px">Crunches won't burn belly fat. Here's what will.</h3><p>What the research says about where you lose fat first.</p></div><span class="meta">03 Oct · 3 min</span></a>
+      <a class="article" href="#"><div><span class="label">Training</span><h3 style="margin-top:10px">Soreness isn't a scoreboard</h3><p>Judge a workout by progress, not by how much it hurts the next day.</p></div><span class="meta">26 Sep · 3 min</span></a>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head"><h2>Free guides</h2><a href="#">All guides →</a></div>
+      <div class="cards">
+        <a class="card" href="#"><span class="label">Guide · Start here</span><h3>Fat Loss 101</h3><p>The six habits that drive fat loss, in order, and what you can ignore.</p><div class="foot"><span>7 min read</span><b>Free</b></div></a>
+        <a class="card" href="#"><span class="label">Plan · Beginner</span><h3>Full Body Foundations</h3><p>Three full-body sessions a week built around the big lifts.</p><div class="foot"><span>3×/week · 8 weeks</span><b>Free PDF</b></div></a>
+        <a class="card" href="#"><span class="label">Plan · Intermediate</span><h3>Upper / Lower Split</h3><p>Four days a week, every muscle trained twice.</p><div class="foot"><span>4×/week · 10 weeks</span><b>Free PDF</b></div></a>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head"><h2>Store</h2><a href="#">Visit the store →</a></div>
+      <div class="cards">
+        <a class="card" href="#"><span class="label">Program</span><h3>12-Week Fat Loss Program</h3><p>Training, nutrition and weekly check-ins.</p><div class="foot"><span class="price">₹999</span><b>Coming soon</b></div></a>
+        <a class="card" href="#"><span class="label">Program</span><h3>Home Workout Plan</h3><p>Eight weeks, dumbbells and bodyweight only.</p><div class="foot"><span class="price">₹399</span><b>Coming soon</b></div></a>
+        <a class="card" href="#"><span class="label">Guide</span><h3>High-Protein Indian Meal Guide</h3><p>Everyday Indian meals with more protein.</p><div class="foot"><span class="price">₹299</span><b>Coming soon</b></div></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="coach">
+    <img src="img/mark-bone.png" alt="">
+    <div class="wrap">
+      <div>
+        <span class="label" style="color:var(--on-blue);opacity:.8">1:1 online coaching</span>
+        <h2 style="margin-top:16px">Train with Anand.</h2>
+        <p>Training, nutrition and weekly check-ins, built around your schedule.</p>
+      </div>
+      <div class="side">
+        <a class="btn btn-dark" href="https://tally.so/r/rjgY2L" target="_blank" rel="noopener">Apply for coaching</a>
+        <span>Or DM "WORK" to @anandtrainsyou</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <img src="img/logo-bone.png" alt="ATcoaching">
+    <nav><a href="#">Articles</a><a href="#">Free guides</a><a href="#">Store</a><a href="https://instagram.com/anandtrainsyou" target="_blank" rel="noopener">Instagram</a></nav>
+  </div>
+</footer>
+</body>
+</html>
