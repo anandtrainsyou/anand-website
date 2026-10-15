@@ -1,0 +1,29 @@
+[
+  {
+    "slug": "you-cant-out-train-your-diet",
+    "title": "You can't out-train your diet (but you can out-plan it)",
+    "date": "2026-10-10",
+    "tags": ["Fat loss", "Nutrition"],
+    "readTime": 4,
+    "excerpt": "An hour on the treadmill burns about as much as one big plate of biryani. Here's why the kitchen decides your fat loss, and why that's actually good news.",
+    "sample": true
+  },
+  {
+    "slug": "crunches-wont-burn-belly-fat",
+    "title": "Crunches won't burn belly fat. Here's what will.",
+    "date": "2026-10-03",
+    "tags": ["Myth busting", "Fat loss"],
+    "readTime": 3,
+    "excerpt": "Spot reduction is the myth that refuses to die. What the research says about where you lose fat first, and why your abs are already there.",
+    "sample": true
+  },
+  {
+    "slug": "soreness-isnt-a-scoreboard",
+    "title": "Soreness isn't a scoreboard",
+    "date": "2026-09-26",
+    "tags": ["Training", "Opinion"],
+    "readTime": 3,
+    "excerpt": "If you judge a workout by how much it hurts the next day, you're optimising for the wrong stat. Track progress instead.",
+    "sample": true
+  }
+]

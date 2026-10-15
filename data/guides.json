@@ -1,6 +1,16 @@
 [
   {
+    "id": "fat-loss-101",
+    "type": "guide",
+    "title": "Fat Loss 101: The Only 6 Things That Matter",
+    "level": "Start here",
+    "readTime": 7,
+    "summary": "Skip the noise. The handful of habits that actually drive fat loss, in the order they matter, and what you can safely ignore.",
+    "sample": true
+  },
+  {
     "id": "full-body-3",
+    "type": "plan",
     "title": "Full Body Foundations",
     "level": "Beginner",
     "daysPerWeek": 3,
@@ -50,6 +60,7 @@
   },
   {
     "id": "upper-lower-4",
+    "type": "plan",
     "title": "Upper / Lower Split",
     "level": "Intermediate",
     "daysPerWeek": 4,
@@ -114,6 +125,7 @@
   },
   {
     "id": "push-pull-legs",
+    "type": "plan",
     "title": "Push / Pull / Legs",
     "level": "Advanced",
     "daysPerWeek": 6,

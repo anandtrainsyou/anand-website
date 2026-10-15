@@ -1,3 +1,7 @@
-# Short links for Instagram bios/stories: /p/push-pull-legs -> that plan's page
-/p/:id  /plans/?p=:id  302
-/p      /plans/        302
+# Short links for Instagram bios and stories
+/a/:slug   /articles/?a=:slug   302
+/g/:id     /guides/?g=:id       302
+/s/:id     /store/?p=:id        302
+/p/:id     /guides/?g=:id       302
+/plans     /guides/             301
+/plans/*   /guides/             301

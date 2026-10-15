@@ -1,0 +1,45 @@
+[
+  {
+    "id": "12-week-fat-loss",
+    "name": "12-Week Fat Loss Program",
+    "price": 999,
+    "tagline": "The full playbook: training, nutrition and weekly check-ins.",
+    "summary": "A structured 12-week plan that takes you from 'where do I even start' to a routine you can actually keep. Gym-based, 3-4 days a week.",
+    "includes": [
+      "12 weeks of progressive gym workouts (3 or 4 days/week)",
+      "Calorie and protein calculator walkthrough",
+      "Flexible meal structure, no banned foods",
+      "Weekly check-in tracker (PDF)"
+    ],
+    "checkoutUrl": "",
+    "sample": true
+  },
+  {
+    "id": "home-workout-plan",
+    "name": "Home Workout Plan",
+    "price": 399,
+    "tagline": "No gym? No excuses. Dumbbells and bodyweight only.",
+    "summary": "An 8-week plan built for a pair of adjustable dumbbells and a bit of floor space.",
+    "includes": [
+      "8 weeks, 4 sessions per week",
+      "Exercise swaps for every movement",
+      "Progression rules so it keeps working"
+    ],
+    "checkoutUrl": "",
+    "sample": true
+  },
+  {
+    "id": "high-protein-meal-guide",
+    "name": "High-Protein Indian Meal Guide",
+    "price": 299,
+    "tagline": "Hit your protein without eating chicken breast five times a day.",
+    "summary": "Simple, high-protein versions of everyday Indian meals, with veg and non-veg options and rough macros for each.",
+    "includes": [
+      "30+ meal ideas, veg and non-veg",
+      "Protein per serving for every meal",
+      "Budget grocery list"
+    ],
+    "checkoutUrl": "",
+    "sample": true
+  }
+]

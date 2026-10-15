@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Free Guides | ATcoaching</title>
+  <meta name="description" content="Free workout plans and fat loss guides you can download and use today.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta property="og:title" content="Free Guides | ATcoaching">
+  <meta property="og:description" content="Free workout plans and fat loss guides you can download and use today.">
+  <meta property="og:image" content="/assets/img/og.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Chakra+Petch:ital,wght@0,600;0,700;1,600;1,700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body data-page="guides">
+  <main id="app">
+    <!-- With ?a= / ?g= / ?p= in the URL, site.js swaps this for the single item view. -->
+    <header class="page-head">
+      <img class="mark-bg" src="/assets/img/mark.png" alt="" aria-hidden="true">
+      <div class="wrap">
+        <span class="tag-pill"><span class="dot"></span>Free loot · No sign-up</span>
+        <h1 class="display">Free guides</h1>
+        <p class="lede">Workout plans and how-tos you can follow today. Every plan downloads as a PDF for the gym.</p>
+        <div class="filters" role="group" aria-label="Filter guides">
+          <button class="filter" data-type="all" aria-pressed="true">All</button>
+          <button class="filter" data-type="plan" aria-pressed="false">Workout plans</button>
+          <button class="filter" data-type="guide" aria-pressed="false">Guides</button>
+        </div>
+      </div>
+    </header>
+    <section class="listing">
+      <div class="wrap"><div class="grid" id="list"></div></div>
+    </section>
+  </main>
+  <script src="/assets/site.js"></script>
+</body>
+</html>
