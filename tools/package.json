@@ -1,0 +1,17 @@
+{
+  "name": "atcoaching-tools",
+  "private": true,
+  "scripts": {
+    "dev": "cd .. && wrangler pages dev . --port 8788",
+    "db:migrate:local": "cd .. && wrangler d1 migrations apply trainzoo-studio --local",
+    "db:migrate": "cd .. && wrangler d1 migrations apply trainzoo-studio --remote"
+  },
+  "devDependencies": {
+    "wrangler": "4.145.0"
+  },
+  "allowScripts": {
+    "workerd@1.20260930.2": true,
+    "esbuild@0.28.1": true
+  },
+  "description": "Dev tooling for the studio. Kept out of the site root so Cloudflare Pages never installs or publishes it."
+}

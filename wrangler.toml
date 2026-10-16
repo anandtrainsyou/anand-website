@@ -1,0 +1,19 @@
+# Cloudflare Pages config. The static site deploys as before; these bindings feed the
+# /dashboard posting studio (functions/api/*). See "Posting studio" in README.md for setup.
+name = "atcoaching-site"
+pages_build_output_dir = "."
+compatibility_date = "2026-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "trainzoo-studio"
+# Replace with the id printed by `npx wrangler d1 create trainzoo-studio` before deploying.
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "trainzoo-media"
+
+# ACCESS_TEAM_DOMAIN, ACCESS_AUD and ALLOWED_EMAILS are set in the Pages dashboard
+# (Settings → Variables). Locally, leave them unset: the API then only answers on localhost.

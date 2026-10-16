@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Studio | ATcoaching</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="icon" href="/assets/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Chakra+Petch:ital,wght@0,600;0,700;1,600;1,700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/studio.css">
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="/dashboard/"><img src="/assets/img/mark.png" alt="" width="40" height="26"><span>Studio</span></a>
+    <nav class="views" aria-label="Studio">
+      <button data-view="compose" aria-current="page">Compose</button>
+      <button data-view="queue">Queue</button>
+    </nav>
+    <a class="hud back" href="/">Site ↗</a>
+  </header>
+
+  <p class="notice">No accounts are connected yet, so nothing publishes. Scheduled posts wait in the queue until accounts are connected.</p>
+
+  <main id="compose" class="compose">
+    <aside class="side">
+      <section class="card" id="main-video"></section>
+      <section class="card">
+        <h2 class="hud">Where it can go</h2>
+        <ul class="elig" id="elig"></ul>
+        <div id="fix"></div>
+      </section>
+    </aside>
+
+    <div class="editor">
+      <section class="card base">
+        <label class="field">
+          <span class="hud">Caption for every platform</span>
+          <textarea id="base-caption" rows="4" placeholder="Write it once here. Change it per platform below if you need to."></textarea>
+        </label>
+        <label class="field">
+          <span class="hud">Hashtags for every platform</span>
+          <input id="base-hashtags" type="text" placeholder="#gym #fatloss" autocomplete="off">
+        </label>
+        <div class="sets" id="sets"></div>
+      </section>
+
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <div class="panels" id="panels"></div>
+    </div>
+
+    <footer class="actions card">
+      <div class="when" role="radiogroup" aria-label="When to post">
+        <label><input type="radio" name="when" value="now" checked> Post now</label>
+        <label><input type="radio" name="when" value="at"> Schedule</label>
+        <label><input type="radio" name="when" value="each"> Different time per platform</label>
+        <input type="datetime-local" id="when-at" hidden>
+      </div>
+      <div class="buttons">
+        <span class="hud" id="editing"></span>
+        <button class="btn ghost" id="new-post" hidden>New post</button>
+        <button class="btn ghost" id="save-draft">Save draft</button>
+        <button class="btn primary" id="submit">Queue it</button>
+      </div>
+      <pre class="problems" id="problems" hidden></pre>
+    </footer>
+  </main>
+
+  <main id="queue" class="queue" hidden>
+    <div class="card"><ul class="posts" id="posts"></ul></div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="/dashboard/studio.js"></script>
+</body>
+</html>

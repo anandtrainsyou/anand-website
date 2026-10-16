@@ -94,6 +94,7 @@ function renderChrome(page) {
         <div class="giant" aria-hidden="true">Respawn</div>
         <div class="bottom">
           <span class="hud">© ${new Date().getFullYear()} ${SITE.name}</span>
+          <span class="hud"><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></span>
           <span class="hud">No myths were spared</span>
         </div>
       </div>
