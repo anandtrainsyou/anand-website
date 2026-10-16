@@ -18,11 +18,12 @@
     <nav class="views" aria-label="Studio">
       <button data-view="compose" aria-current="page">Compose</button>
       <button data-view="queue">Queue</button>
+      <button data-view="accounts">Accounts</button>
     </nav>
     <a class="hud back" href="/">Site ↗</a>
   </header>
 
-  <p class="notice">No accounts are connected yet, so nothing publishes. Scheduled posts wait in the queue until accounts are connected.</p>
+  <p class="notice" id="notice" hidden></p>
 
   <main id="compose" class="compose">
     <aside class="side">
@@ -70,6 +71,11 @@
 
   <main id="queue" class="queue" hidden>
     <div class="card"><ul class="posts" id="posts"></ul></div>
+  </main>
+
+  <main id="accounts" class="queue" hidden>
+    <div class="card"><ul class="accts" id="accts"></ul></div>
+    <p class="hud fine">Disconnecting removes the saved login here. To revoke access completely, also remove the app in that platform’s settings.</p>
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>

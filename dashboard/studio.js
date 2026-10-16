@@ -165,6 +165,17 @@ const fresh = () => ({
 });
 let S = null;
 S = fresh();
+let ACCOUNTS = {}; // platform -> { status, displayName, publishing, configured, ... }
+
+/** Short label for whether this platform can actually post right now. */
+function accountTag(p) {
+  const a = ACCOUNTS[p];
+  if (!a) return '';
+  if (!a.publishing) return 'later step';
+  if (a.status === 'connected') return '';
+  if (a.status === 'needs_reconnect') return 'reconnect';
+  return 'not connected';
+}
 
 const enabledIds = () => PLATFORM_IDS.filter(p => S.targets[p].enabled);
 const videoFor = p => S.targets[p].own || S.main;
@@ -262,7 +273,7 @@ function renderElig() {
     const note = st.reasons.length ? st.reasons.join(' · ') : LEVEL_TEXT[st.level];
     return `<li class="${t.enabled ? '' : 'off'}">
       <label class="tog"><input type="checkbox" data-enable="${p}" ${t.enabled ? 'checked' : ''}><span class="sr">Post to ${PLATFORMS[p].name}</span></label>
-      <button class="pname" data-open="${p}"><span class="badge ${st.level}">${PLATFORMS[p].short}</span>${esc(PLATFORMS[p].name)}${t.own ? '<em>own cut</em>' : ''}</button>
+      <button class="pname" data-open="${p}"><span class="badge ${st.level}">${PLATFORMS[p].short}</span>${esc(PLATFORMS[p].name)}${t.own ? '<em>own cut</em>' : ''}${accountTag(p) ? `<em class="acct">${accountTag(p)}</em>` : ''}</button>
       <span class="why ${st.level}">${esc(note)}</span>
     </li>`;
   }).join('');
@@ -699,9 +710,17 @@ window.addEventListener('beforeunload', e => { if (busy()) e.preventDefault(); }
 
 const STATUS_TEXT = { draft: 'Draft', scheduled: 'Scheduled', publishing: 'Posting…', published: 'Live', failed: 'Failed' };
 
-async function renderQueue() {
+function targetStatus(t) {
+  if (t.status === 'scheduled' && ACCOUNTS[t.platform] && !ACCOUNTS[t.platform].publishing) return 'Waiting (posting comes in a later step)';
+  if (t.status === 'scheduled' && new Date(t.scheduledAt) <= new Date()) return 'Posting soon…';
+  return STATUS_TEXT[t.status];
+}
+
+let queueTimer;
+async function renderQueue(quiet) {
   const list = $('#posts');
-  list.innerHTML = '<li class="hud">Loading…</li>';
+  clearTimeout(queueTimer);
+  if (!quiet) list.innerHTML = '<li class="hud">Loading…</li>';
   try {
     const { posts } = await api('/posts');
     list.innerHTML = posts.length ? posts.map(post => {
@@ -715,10 +734,12 @@ async function renderQueue() {
         </div>
         <ul class="ptargets">${post.targets.map(t => `<li class="${t.status}">
           <span class="badge">${PLATFORMS[t.platform].short}</span>
-          ${t.remoteUrl ? `<a href="${esc(t.remoteUrl)}" target="_blank" rel="noopener">${STATUS_TEXT[t.status]}</a>` : STATUS_TEXT[t.status]}
+          ${t.remoteUrl ? `<a href="${esc(t.remoteUrl)}" target="_blank" rel="noopener">${STATUS_TEXT[t.status]} ↗</a>` : esc(targetStatus(t))}
           ${t.scheduledAt && t.status !== 'published' ? `<span class="hud">${esc(fmtWhen(t.scheduledAt))}</span>` : ''}
+          ${t.publishedAt ? `<span class="hud">${esc(fmtWhen(t.publishedAt))}</span>` : ''}
           ${t.media ? '<em>own cut</em>' : ''}
-          ${t.error ? `<span class="hud bad" title="${esc(t.error)}">${esc(t.error.slice(0, 60))}</span>` : ''}
+          ${t.status === 'failed' ? `<button class="link" data-retry="${post.id}" data-platform="${t.platform}">Retry</button>` : ''}
+          ${t.error ? `<span class="err ${t.status === 'published' ? 'note' : ''}">${esc(t.error)}</span>` : ''}
         </li>`).join('')}</ul>
         <div class="pact">
           ${locked ? '' : `<button class="btn sm ghost" data-edit="${post.id}">Edit</button><button class="link" data-del="${post.id}">Delete</button>`}
@@ -726,14 +747,24 @@ async function renderQueue() {
       </li>`;
     }).join('') : '<li class="hud">Nothing saved yet.</li>';
     list._posts = posts;
+    // Keep it fresh while something is on its way out.
+    const active = posts.some(p => p.targets.some(t =>
+      t.status === 'publishing' || (t.status === 'scheduled' && ACCOUNTS[t.platform]?.publishing && new Date(t.scheduledAt) <= new Date(Date.now() + 60_000))));
+    if (active && !$('#queue').hidden) queueTimer = setTimeout(() => renderQueue(true), 10_000);
   } catch (err) {
     list.innerHTML = `<li class="hud bad">${esc(err.message)}</li>`;
   }
 }
 
 $('#posts').addEventListener('click', async e => {
-  const edit = e.target.closest('[data-edit]'), del = e.target.closest('[data-del]');
-  if (edit) {
+  const edit = e.target.closest('[data-edit]'), del = e.target.closest('[data-del]'), retry = e.target.closest('[data-retry]');
+  if (retry) {
+    try {
+      await api(`/posts/${retry.dataset.retry}/retry`, { method: 'POST', body: JSON.stringify({ platform: retry.dataset.platform }) });
+      toast(`Retrying ${PLATFORMS[retry.dataset.platform].name} within a minute`);
+      renderQueue(true);
+    } catch (err) { toast(err.message); }
+  } else if (edit) {
     loadIntoComposer($('#posts')._posts.find(p => p.id === edit.dataset.edit));
     showView('compose');
   } else if (del) {
@@ -775,13 +806,80 @@ function loadIntoComposer(post) {
   renderSets();
 }
 
+/* ---------- accounts ---------- */
+
+async function loadAccounts() {
+  try {
+    const { accounts } = await api('/accounts');
+    ACCOUNTS = Object.fromEntries(accounts.map(a => [a.platform, a]));
+  } catch (err) {
+    toast(err.message);
+  }
+  renderNotice();
+  renderElig();
+  if (!$('#accounts').hidden) renderAccounts();
+}
+
+function renderNotice() {
+  const list = Object.values(ACCOUNTS);
+  const live = list.filter(a => a.publishing && a.status === 'connected').map(a => PLATFORMS[a.platform].name);
+  const need = list.filter(a => a.publishing && a.status !== 'connected').map(a => PLATFORMS[a.platform].name);
+  const later = list.filter(a => !a.publishing).map(a => PLATFORMS[a.platform].name);
+  const bits = [];
+  if (live.length) bits.push(`Posting live to ${live.join(' and ')}.`);
+  if (need.length) bits.push(`Connect ${need.join(' and ')} in Accounts to post there.`);
+  if (later.length) bits.push(`${later.join(', ')} come in later steps. Their posts wait in the queue.`);
+  $('#notice').textContent = bits.join(' ');
+  $('#notice').hidden = !bits.length;
+}
+
+function renderAccounts() {
+  $('#accts').innerHTML = PLATFORM_IDS.map(p => {
+    const a = ACCOUNTS[p] || { status: 'disconnected' }, name = PLATFORMS[p].name;
+    let state, action = '';
+    if (!a.publishing) {
+      state = '<span class="hud">Comes in a later step</span>';
+    } else if (a.status === 'connected') {
+      const renew = a.expiresAt ? `Login renews automatically · current one expires ${esc(fmtWhen(a.expiresAt))}` : '';
+      state = `<span class="good">Connected as <b>${esc(a.displayName)}</b></span><span class="hud">${renew}</span>${a.error ? `<span class="err">${esc(a.error)}</span>` : ''}`;
+      action = `<a class="btn sm ghost" href="/api/accounts/${p}/connect">Reconnect</a><button class="link" data-disconnect="${p}">Disconnect</button>`;
+    } else if (a.status === 'pending') {
+      state = `<span>Pick the Page to post to:</span><div class="row">${(a.pages || []).map(pg => `<button class="btn sm ghost" data-page="${esc(pg.id)}">${esc(pg.name)}</button>`).join('')}</div>`;
+    } else {
+      state = a.status === 'needs_reconnect'
+        ? `<span class="err">Login expired or was revoked. ${esc(a.error || '')}</span>`
+        : '<span class="hud">Not connected</span>';
+      action = a.configured
+        ? `<a class="btn sm primary" href="/api/accounts/${p}/connect">Connect ${esc(name)}</a>`
+        : '<span class="hud">Add the app keys in Cloudflare first (README)</span>';
+    }
+    return `<li><span class="badge">${PLATFORMS[p].short}</span><div class="ainfo"><b>${esc(name)}</b>${state}</div><div class="aact">${action}</div></li>`;
+  }).join('');
+}
+
+$('#accts').addEventListener('click', async e => {
+  const dis = e.target.closest('[data-disconnect]'), page = e.target.closest('[data-page]');
+  try {
+    if (dis) {
+      if (!confirm(`Disconnect ${PLATFORMS[dis.dataset.disconnect].name}?`)) return;
+      await api(`/accounts?platform=${dis.dataset.disconnect}`, { method: 'DELETE' });
+    } else if (page) {
+      const { connected } = await api('/accounts/facebook/page', { method: 'POST', body: JSON.stringify({ pageId: page.dataset.page }) });
+      toast(`Facebook connected: ${connected}`);
+    } else return;
+    loadAccounts();
+  } catch (err) { toast(err.message); }
+});
+
 /* ---------- shell ---------- */
 
 function showView(name) {
   $$('[data-view]').forEach(b => b.toggleAttribute('aria-current', b.dataset.view === name));
   $('#compose').hidden = name !== 'compose';
   $('#queue').hidden = name !== 'queue';
+  $('#accounts').hidden = name !== 'accounts';
   if (name === 'queue') renderQueue();
+  if (name === 'accounts') renderAccounts();
 }
 $$('[data-view]').forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
 
@@ -795,5 +893,16 @@ function toast(msg) {
 }
 
 renderAll();
+loadAccounts();
+
+// Coming back from a platform login.
+{
+  const q = new URLSearchParams(location.search);
+  if (q.get('view')) showView(q.get('view'));
+  if (q.get('connected')) toast(`${PLATFORMS[q.get('connected')]?.name || q.get('connected')} connected`);
+  if (q.get('pick')) toast('Pick which Facebook Page to post to');
+  if (q.get('error')) toast(q.get('error'));
+  if (q.toString()) history.replaceState(null, '', location.pathname);
+}
 api('/hashtag-sets').then(d => { S.sets = d.sets; renderSets(); }).catch(err => toast(err.message));
 renderSets();
