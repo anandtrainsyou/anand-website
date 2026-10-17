@@ -3,10 +3,11 @@
   "private": true,
   "scripts": {
     "dev": "cd .. && wrangler pages dev . --port 8788",
-    "db:migrate:local": "cd .. && wrangler d1 migrations apply trainzoo-studio --local",
-    "db:migrate": "cd .. && wrangler d1 migrations apply trainzoo-studio --remote",
+    "db:migrate:local": "cd .. && wrangler d1 migrations apply atcoaching-studio --local",
+    "db:migrate": "cd .. && wrangler d1 migrations apply atcoaching-studio --remote",
     "publisher:dev": "cd ../workers/publisher && wrangler dev --test-scheduled --persist-to ../../.wrangler/state --port 8789",
-    "publisher:deploy": "cd ../workers/publisher && wrangler deploy"
+    "publisher:deploy": "cd ../workers/publisher && wrangler deploy",
+    "deploy:site": "sh deploy-site.sh"
   },
   "devDependencies": {
     "wrangler": "4.145.0"

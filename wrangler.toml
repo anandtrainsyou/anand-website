@@ -6,14 +6,13 @@ compatibility_date = "2026-09-01"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "trainzoo-studio"
-# Replace with the id printed by `npx wrangler d1 create trainzoo-studio` before deploying.
-database_id = "00000000-0000-0000-0000-000000000000"
+database_name = "atcoaching-studio"
+database_id = "64b40a36-642d-49db-92fc-4afd856bd863"
 migrations_dir = "migrations"
 
 [[r2_buckets]]
 binding = "MEDIA"
-bucket_name = "trainzoo-media"
+bucket_name = "atcoaching-media"
 
 # ACCESS_TEAM_DOMAIN, ACCESS_AUD and ALLOWED_EMAILS are set in the Pages dashboard
 # (Settings → Variables). Locally, leave them unset: the API then only answers on localhost.

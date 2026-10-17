@@ -1,6 +1,6 @@
 # The publisher runs on its own because Pages Functions can't run on a timer.
 # Deploy: npm --prefix tools run publisher:deploy   (see "Posting studio" in README.md)
-name = "trainzoo-publisher"
+name = "atcoaching-publisher"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
 workers_dev = false
@@ -8,17 +8,17 @@ workers_dev = false
 [triggers]
 crons = ["* * * * *"]
 
-# Same database and bucket as the Pages project (copy the database_id from ../../wrangler.toml).
+# Same database and bucket as the Pages project.
 [[d1_databases]]
 binding = "DB"
-database_name = "trainzoo-studio"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_name = "atcoaching-studio"
+database_id = "64b40a36-642d-49db-92fc-4afd856bd863"
 
 [[r2_buckets]]
 binding = "MEDIA"
-bucket_name = "trainzoo-media"
+bucket_name = "atcoaching-media"
 
 [vars]
-PUBLIC_BASE_URL = "https://trainzoo.in"
+PUBLIC_BASE_URL = "https://anandtrainsyou.in"
 
 # Secrets (same values as the Pages project): TOKEN_KEY, MEDIA_URL_KEY

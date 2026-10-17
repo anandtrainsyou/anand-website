@@ -1,4 +1,4 @@
-// trainzoo-publisher: wakes up every minute and publishes whatever is due. See server/publisher.js.
+// atcoaching-publisher: wakes up every minute and publishes whatever is due. See server/publisher.js.
 
 import { runPublisher } from '../../../server/publisher.js';
 

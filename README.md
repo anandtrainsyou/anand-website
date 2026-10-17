@@ -1,7 +1,7 @@
 # Workout plans site
 
 A plain static site (HTML/CSS/JS, no build step) hosted on Cloudflare Pages.
-Every push to `main` on GitHub redeploys the site automatically.
+Deploy it with `npm --prefix tools run deploy:site` (see Posting studio below). New here? Read `HANDOFF.md` first.
 
 ## Pages
 
@@ -76,35 +76,35 @@ A private dashboard for uploading one video and posting it to YouTube Shorts, In
 
 ### One-time Cloudflare setup
 
-1. `cd tools && npm install && npx wrangler login`
-2. `npx wrangler d1 create trainzoo-studio` and paste the printed `database_id` into **both** `wrangler.toml` and `workers/publisher/wrangler.toml`. **Do this before pushing**, because Pages deploys fail on the placeholder id. Also make sure `name` in `wrangler.toml` matches the Pages project name.
-3. `npx wrangler r2 bucket create trainzoo-media`
-4. `npm run db:migrate`
-5. **Lock the studio:** Cloudflare dashboard → Zero Trust → Access → Applications → Add → Self-hosted. Add two destinations, `trainzoo.in/dashboard` and `trainzoo.in/api`, with a policy that allows only your email. Copy the application's **AUD tag**. (Leave `/m/` public, since the platforms fetch videos from it.)
-6. Make two random keys: `openssl rand -base64 32` (for `TOKEN_KEY`) and `openssl rand -hex 32` (for `MEDIA_URL_KEY`). Changing `TOKEN_KEY` later means reconnecting every account.
-7. Pages project → Settings → Variables and secrets (Production):
+Already done for anandtrainsyou.in: the D1 database `atcoaching-studio` (its id is in both `wrangler.toml` files) and the Pages project `atcoaching-site`. Commands run from `tools/`.
+
+1. `npm install && npx wrangler login`
+2. Turn on **R2** in the Cloudflare dashboard, then `npx wrangler r2 bucket create atcoaching-media`
+3. `npm run db:migrate` (safe to re-run; applies only new migrations)
+4. **Lock the studio:** Zero Trust → Access → Applications → Add → Self-hosted. Add two public hostnames, `anandtrainsyou.in` path `dashboard` and `anandtrainsyou.in` path `api`, with an Allow policy for only your email. Note the **team domain** and the app's **AUD tag**. (Leave `/m/` public, since the platforms fetch videos from it.)
+5. **Settings live as Pages secrets** (the dashboard's variables are locked because `wrangler.toml` manages the project). Set each one with `npx wrangler pages secret put <NAME> --project-name atcoaching-site`:
 
    | Name | Value |
    | --- | --- |
-   | `ACCESS_TEAM_DOMAIN` | `<your-team>.cloudflareaccess.com` |
-   | `ACCESS_AUD` | AUD tag from step 5 |
+   | `TOKEN_KEY` | `openssl rand -base64 32`. Changing it later means reconnecting every account |
+   | `MEDIA_URL_KEY` | `openssl rand -hex 32` |
+   | `PUBLIC_BASE_URL` | `https://anandtrainsyou.in` |
+   | `ACCESS_TEAM_DOMAIN` | `<team>.cloudflareaccess.com` |
+   | `ACCESS_AUD` | AUD tag from step 4 |
    | `ALLOWED_EMAILS` | your email (comma-separate several) |
-   | `PUBLIC_BASE_URL` | `https://trainzoo.in` |
-   | `TOKEN_KEY`, `MEDIA_URL_KEY` | from step 6 (as secrets) |
-   | `IG_APP_ID`, `IG_APP_SECRET` | from the Meta app, below (secret as a secret) |
+   | `IG_APP_ID`, `IG_APP_SECRET` | from the Meta app, below |
    | `META_APP_ID`, `META_APP_SECRET` | from the Meta app, below |
    | `FB_LOGIN_CONFIG_ID` | only if your Meta app uses "Facebook Login for Business" |
 
    Without the Access values, the API refuses every request on the live site.
-8. Push. The D1 and R2 bindings come from `wrangler.toml`.
-9. **Deploy the publisher:**
+6. **Deploy the site:** `npm run deploy:site`. It uploads only files git tracks, so local test data and `.dev.vars` stay on your machine. The first time, attach the domain under Pages → atcoaching-site → Custom domains.
+7. **Deploy the publisher**, giving it the same `TOKEN_KEY` and `MEDIA_URL_KEY` as the site:
    ```bash
-   cd tools
+   npm run publisher:deploy
    npx wrangler secret put TOKEN_KEY --config ../workers/publisher/wrangler.toml
    npx wrangler secret put MEDIA_URL_KEY --config ../workers/publisher/wrangler.toml
-   npm run publisher:deploy
    ```
-   Use the same two values as the Pages project. Its logs are under Workers → trainzoo-publisher → Logs.
+   Its logs are under Workers → atcoaching-publisher → Logs.
 
 ### Meta app (Instagram + Facebook)
 
@@ -113,10 +113,10 @@ One app at [developers.facebook.com](https://developers.facebook.com/apps) cover
 1. **Create app**, and pick the use cases for managing Instagram content and managing a Facebook Page.
 2. **Instagram → API setup with Instagram login:**
    - Copy the *Instagram app ID* and *Instagram app secret* into `IG_APP_ID` / `IG_APP_SECRET`.
-   - Under business login settings, add the redirect URL `https://trainzoo.in/api/accounts/instagram/callback`.
+   - Under business login settings, add the redirect URL `https://anandtrainsyou.in/api/accounts/instagram/callback`.
    - Add your Instagram account as a tester (App roles), then accept the invite in Instagram.
-3. **Facebook Login (for Business) → Settings:** add the redirect URL `https://trainzoo.in/api/accounts/facebook/callback`. If it asks for a *configuration*, create one with a user access token and the permissions `pages_show_list`, `pages_read_engagement`, `pages_manage_posts` and `business_management`, then put its ID in `FB_LOGIN_CONFIG_ID`.
-4. **App settings → Basic:** copy the App ID and secret into `META_APP_ID` / `META_APP_SECRET`. Point the privacy policy URL at `https://trainzoo.in/privacy/` and terms at `https://trainzoo.in/terms/`.
+3. **Facebook Login (for Business) → Settings:** add the redirect URL `https://anandtrainsyou.in/api/accounts/facebook/callback`. If it asks for a *configuration*, create one with a user access token and the permissions `pages_show_list`, `pages_read_engagement`, `pages_manage_posts` and `business_management`, then put its ID in `FB_LOGIN_CONFIG_ID`.
+4. **App settings → Basic:** copy the App ID and secret into `META_APP_ID` / `META_APP_SECRET`. Point the privacy policy URL at `https://anandtrainsyou.in/privacy/` and terms at `https://anandtrainsyou.in/terms/`.
 5. Keep the app in **Development** mode. It can post to accounts that have a role on the app (you) without App Review.
 6. In the studio, open **Accounts** and click **Connect** for each one. If you manage several Facebook Pages, pick the one to post to.
 
