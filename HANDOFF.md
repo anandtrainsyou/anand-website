@@ -46,9 +46,11 @@ The ATcoaching homepage/plans in this repo and the Fat Loss Map site are also tw
 
 ## Set up on your machine
 
+This code lives on the `posting-studio` branch of `anandtrainsyou/anand-website`. Its history is separate from that repo's `main` (the Fat Loss Map site), so never merge the two by accident. Clone just this branch:
+
 ```bash
-git clone <this repo>
-cd <repo>
+git clone --branch posting-studio --single-branch https://github.com/anandtrainsyou/anand-website.git atcoaching-studio
+cd atcoaching-studio
 npm --prefix tools install
 npx --prefix tools wrangler login
 ```
